@@ -1,0 +1,91 @@
+grammar DSLParallelMetaheuristic;
+
+@parser::header {
+	import java.util.Map;
+	import java.util.HashMap;
+
+	import com.test.nose.interprete.ast.ASTNode;
+	import com.test.nose.interprete.ast.Assign;
+	import com.test.nose.interprete.ast.Constant;
+	import com.test.nose.interprete.ast.Pool;
+	import com.test.nose.interprete.ast.Worker;
+	import com.test.nose.interprete.ast.Team;
+}
+
+start: 
+	EXECUTION OPEN_CURLY_BRACKET 
+		{ 
+			List<ASTNode> body = new ArrayList<ASTNode>();
+			Map<String, Object> symbolTable = new HashMap<String, Object>();
+		}
+		(s1=team { body.add($s1.node); })+
+	CLOSE_CURLY_BRACKET
+	{ 
+		for(ASTNode n : body) {
+			n.execute(symbolTable);
+		}
+	};
+
+team returns [ASTNode node]: 
+	{ Constant quantity = new Constant(1); }
+	TEAM 
+		(LESS_THAN 
+			NUMBER { quantity = new Constant(Integer.parseInt($NUMBER.text)); }
+		GREATER_THAN)? 
+	OPEN_CURLY_BRACKET 
+		{ List<ASTNode> body = new ArrayList<ASTNode>(); }
+		(s1=worker { body.add($s1.node); })+
+		(s2=pool { body.add($s2.node); })*
+	CLOSE_CURLY_BRACKET
+	{ $node = new Team(quantity, body); };
+
+worker returns [ASTNode node]: 
+		{ Constant quantity = new Constant(1); }
+		WORKER 
+			(LESS_THAN 
+				NUMBER { quantity = new Constant(Integer.parseInt($NUMBER.text)); } 
+			GREATER_THAN)? 
+		OPEN_CURLY_BRACKET 
+			{ List<ASTNode> body = new ArrayList<ASTNode>(); }
+			(s1=assign { body.add($s1.node); })*
+		CLOSE_CURLY_BRACKET
+		{ $node = new Worker(quantity, body); };
+	
+pool returns [ASTNode node]: 
+	POOL OPEN_CURLY_BRACKET
+		{ List<ASTNode> body = new ArrayList<ASTNode>(); }
+		(s1=assign { body.add($s1.node); })*
+	CLOSE_CURLY_BRACKET
+	{ $node = new Pool(body); };
+	
+assign  returns [ASTNode node]:
+	{ 
+		String key;
+		Constant value;
+	}
+	 STRING { key = String.valueOf($STRING.text); } COLON 
+	(
+		STRING  { value = new Constant(String.valueOf($STRING.text)); }
+		| 
+		NUMBER { value = new Constant(Integer.parseInt($NUMBER.text)); } 
+	)
+	{ $node = new Assign(key, value); };
+
+EXECUTION: 'Execution';
+TEAM: 'Team';
+WORKER: 'Worker';
+POOL: 'Pool';
+
+OPEN_CURLY_BRACKET: '{';
+CLOSE_CURLY_BRACKET: '}';
+GREATER_THAN: '>';
+LESS_THAN: '<';
+
+NUMBER_SIGN: '#';
+COLON: ':';
+COMMA: ',';
+
+NUMBER: [0-9]+;
+STRING: [a-zA-Z0-9_\-]+;
+
+WS :[ \t\r\n]+ -> skip;

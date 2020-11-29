@@ -1,0 +1,28 @@
+Execution {
+	Team <4> {
+		Worker {
+			MH: Genetic
+			poolUpdate: 2
+			poolRequest: 1
+		}
+		Worker <2> {
+			MH: Tabu
+			poolUpdate: 1
+			poolRequest: 2
+		}
+		Worker <2> {
+			MH: Extremal
+			poolUpdate: 1
+			poolRequest: 2
+		}
+		Pool { 
+			ID: 1
+			policy: Elite
+            size: 6
+		}
+		Pool { 
+			ID: 2
+			policy: Diverse
+		}
+	}
+}
