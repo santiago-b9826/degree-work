@@ -4,14 +4,14 @@ package com.udea.degreework;
 	import java.util.Map;
 	import java.util.HashMap;
 
-import org.antlr.v4.runtime.tree.ParseTreeListener;
+	import com.udea.degreework.interpreter.ast.ASTNode;
+	import com.udea.degreework.interpreter.ast.Assign;
+	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.interpreter.ast.Pool;
+	import com.udea.degreework.interpreter.ast.Worker;
+	import com.udea.degreework.interpreter.ast.Team;
 
-import com.udea.degreework.interpreter.ast.ASTNode;
-import com.udea.degreework.interpreter.ast.Assign;
-import com.udea.degreework.interpreter.ast.Constant;
-import com.udea.degreework.interpreter.ast.Pool;
-import com.udea.degreework.interpreter.ast.Team;
-import com.udea.degreework.interpreter.ast.Worker;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
  * This interface defines a complete listener for a parse tree produced by

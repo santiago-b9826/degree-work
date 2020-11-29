@@ -4,19 +4,18 @@ package com.udea.degreework;
 	import java.util.Map;
 	import java.util.HashMap;
 
+	import com.udea.degreework.interpreter.ast.ASTNode;
+	import com.udea.degreework.interpreter.ast.Assign;
+	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.interpreter.ast.Pool;
+	import com.udea.degreework.interpreter.ast.Worker;
+	import com.udea.degreework.interpreter.ast.Team;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
-
-import com.udea.degreework.interpreter.ast.ASTNode;
-import com.udea.degreework.interpreter.ast.Assign;
-import com.udea.degreework.interpreter.ast.Constant;
-import com.udea.degreework.interpreter.ast.Pool;
-import com.udea.degreework.interpreter.ast.Team;
-import com.udea.degreework.interpreter.ast.Worker;
-
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;

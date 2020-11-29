@@ -4,12 +4,12 @@ grammar DSLParallelMetaheuristic;
 	import java.util.Map;
 	import java.util.HashMap;
 
-	import com.test.nose.interprete.ast.ASTNode;
-	import com.test.nose.interprete.ast.Assign;
-	import com.test.nose.interprete.ast.Constant;
-	import com.test.nose.interprete.ast.Pool;
-	import com.test.nose.interprete.ast.Worker;
-	import com.test.nose.interprete.ast.Team;
+	import com.udea.degreework.interpreter.ast.ASTNode;
+	import com.udea.degreework.interpreter.ast.Assign;
+	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.interpreter.ast.Pool;
+	import com.udea.degreework.interpreter.ast.Worker;
+	import com.udea.degreework.interpreter.ast.Team;
 }
 
 start: 

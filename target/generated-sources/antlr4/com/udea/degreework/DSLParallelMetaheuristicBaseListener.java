@@ -4,16 +4,17 @@ package com.udea.degreework;
 	import java.util.Map;
 	import java.util.HashMap;
 
+	import com.udea.degreework.interpreter.ast.ASTNode;
+	import com.udea.degreework.interpreter.ast.Assign;
+	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.interpreter.ast.Pool;
+	import com.udea.degreework.interpreter.ast.Worker;
+	import com.udea.degreework.interpreter.ast.Team;
+
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
-import com.udea.degreework.interpreter.ast.ASTNode;
-import com.udea.degreework.interpreter.ast.Assign;
-import com.udea.degreework.interpreter.ast.Constant;
-import com.udea.degreework.interpreter.ast.Pool;
-import com.udea.degreework.interpreter.ast.Team;
-import com.udea.degreework.interpreter.ast.Worker;
 
 /**
  * This class provides an empty implementation of {@link DSLParallelMetaheuristicListener},
