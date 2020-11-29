@@ -1,5 +1,6 @@
 package com.udea.degreework.interpreter.ast;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +16,11 @@ public class Worker implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
 		for (int i = 0; i < (int) this.quantity.execute(null); i++) {
-			for (ASTNode n : body) {
-				n.execute(symbolTable);
+			Map<String, Object> localSymbolTable = new HashMap<String, Object>();
+			for (ASTNode assign : body) {
+				assign.execute(localSymbolTable);
 			}
 		}
 

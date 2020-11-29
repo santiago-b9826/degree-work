@@ -15,7 +15,7 @@ public class Team implements ASTNode {
 	}
 
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
 
 		for (int i = 0; i < (int) this.quantity.execute(null); i++) {
 			for (ASTNode n : body) {

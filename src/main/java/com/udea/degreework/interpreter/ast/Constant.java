@@ -12,7 +12,7 @@ public class Constant implements ASTNode {
 	}
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
 		return value;
 	}
 

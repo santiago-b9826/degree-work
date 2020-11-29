@@ -9,7 +9,7 @@ public class Main {
 
 	private static final String EXTENSION = "pmet";
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		String program = args.length > 1 ? args[1] : "test/test." + EXTENSION;
 
 		System.out.println("Interpreting file " + program);

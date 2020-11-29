@@ -139,7 +139,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 		}
 	}
 
-	public final StartContext start() throws RecognitionException {
+	public final StartContext start() throws Exception {
 		StartContext _localctx = new StartContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_start);
 		int _la;

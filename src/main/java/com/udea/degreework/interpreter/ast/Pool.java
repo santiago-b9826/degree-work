@@ -1,5 +1,6 @@
 package com.udea.degreework.interpreter.ast;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,10 @@ public class Pool implements ASTNode {
 	}
 	
 	@Override
-	public Object execute(Map<String, Object> symbolTable) {
-		for(ASTNode n : body) {
-			n.execute(symbolTable);
+	public Object execute(Map<String, Object> symbolTable) throws Exception {
+		Map<String, Object> localSymbolTable = new HashMap<String, Object>();
+		for(ASTNode assign : body) {
+			assign.execute(localSymbolTable);
 		}
 		return null;
 	}
