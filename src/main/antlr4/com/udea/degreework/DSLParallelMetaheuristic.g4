@@ -13,40 +13,54 @@ grammar DSLParallelMetaheuristic;
 }
 
 start: 
+	{ 
+		List<ASTNode> configBody = new ArrayList<ASTNode>();
+		List<ASTNode> executionBody = new ArrayList<ASTNode>();
+		Map<String, Object> symbolTable = new HashMap<String, Object>();
+	}
+	CONFIG OPEN_CURLY_BRACKET 
+		(s1=assign { configBody.add($s1.node); })*
+	CLOSE_CURLY_BRACKET
+
 	EXECUTION OPEN_CURLY_BRACKET 
-		{ 
-			List<ASTNode> body = new ArrayList<ASTNode>();
-			Map<String, Object> symbolTable = new HashMap<String, Object>();
-		}
-		(s1=team { body.add($s1.node); })+
+		(s2=team { executionBody.add($s2.node); })+
 	CLOSE_CURLY_BRACKET
 	{ 
-		for(ASTNode n : body) {
+		for(ASTNode n : configBody) {
+			n.execute(symbolTable);
+		}
+	}
+	{ 
+		for(ASTNode n : executionBody) {
 			n.execute(symbolTable);
 		}
 	};
 
 team returns [ASTNode node]: 
-	{ Constant quantity = new Constant(1); }
+	{ 
+		Constant quantity = new Constant(1);
+		List<ASTNode> body = new ArrayList<ASTNode>();
+	}
 	TEAM 
 		(LESS_THAN 
 			NUMBER { quantity = new Constant(Integer.parseInt($NUMBER.text)); }
 		GREATER_THAN)? 
-	OPEN_CURLY_BRACKET 
-		{ List<ASTNode> body = new ArrayList<ASTNode>(); }
+	OPEN_CURLY_BRACKET
 		(s1=worker { body.add($s1.node); })+
 		(s2=pool { body.add($s2.node); })*
 	CLOSE_CURLY_BRACKET
 	{ $node = new Team(quantity, body); };
 
 worker returns [ASTNode node]: 
-		{ Constant quantity = new Constant(1); }
+		{ 
+			Constant quantity = new Constant(1);
+			List<ASTNode> body = new ArrayList<ASTNode>();
+		}
 		WORKER 
 			(LESS_THAN 
 				NUMBER { quantity = new Constant(Integer.parseInt($NUMBER.text)); } 
 			GREATER_THAN)? 
 		OPEN_CURLY_BRACKET 
-			{ List<ASTNode> body = new ArrayList<ASTNode>(); }
 			(s1=assign { body.add($s1.node); })*
 		CLOSE_CURLY_BRACKET
 		{ $node = new Worker(quantity, body); };
@@ -71,6 +85,7 @@ assign  returns [ASTNode node]:
 	)
 	{ $node = new Assign(key, value); };
 
+CONFIG: 'Config';
 EXECUTION: 'Execution';
 TEAM: 'Team';
 WORKER: 'Worker';

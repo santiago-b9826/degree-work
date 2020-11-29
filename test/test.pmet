@@ -1,3 +1,13 @@
+Config {
+    executionTime: 4
+    target: Q
+    errorRange: 3
+    numberOfTeams: 4
+    numberOfWorkersPerTeam: 5
+    updatePoolTime: 100
+    requestPoolTime: 200
+}
+
 Execution {
 	Team <4> {
 		Worker {
