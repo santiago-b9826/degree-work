@@ -14,16 +14,19 @@ Execution {
 			MH: Genetic
 			poolUpdate: 2
 			poolRequest: 1
+			seed: 0
 		}
 		Worker <2> {
 			MH: Tabu
 			poolUpdate: 1
 			poolRequest: 2
+			seed: 1
 		}
 		Worker <2> {
 			MH: Extremal
 			poolUpdate: 1
 			poolRequest: 2
+			seed: 0
 		}
 		Pool { 
 			ID: 1
@@ -33,6 +36,7 @@ Execution {
 		Pool { 
 			ID: 2
 			policy: Diverse
+			size: 4
 		}
 	}
 }

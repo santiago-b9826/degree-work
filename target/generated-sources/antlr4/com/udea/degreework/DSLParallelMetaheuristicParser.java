@@ -7,9 +7,9 @@ package com.udea.degreework;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
-	import com.udea.degreework.interpreter.ast.Pool;
-	import com.udea.degreework.interpreter.ast.Worker;
-	import com.udea.degreework.interpreter.ast.Team;
+	import com.udea.degreework.interpreter.ast.PoolAST;
+	import com.udea.degreework.interpreter.ast.WorkerAST;
+	import com.udea.degreework.interpreter.ast.TeamAST;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -267,7 +267,8 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			{
 			 
 					Constant quantity = new Constant(1);
-					List<ASTNode> body = new ArrayList<ASTNode>();
+					List<ASTNode> workers = new ArrayList<ASTNode>();
+					List<ASTNode> pools = new ArrayList<ASTNode>();
 				
 			setState(36);
 			match(TEAM);
@@ -295,7 +296,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 				{
 				setState(44);
 				((TeamContext)_localctx).s1 = worker();
-				 body.add(((TeamContext)_localctx).s1.node); 
+				 workers.add(((TeamContext)_localctx).s1.node); 
 				}
 				}
 				setState(49); 
@@ -310,7 +311,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 				{
 				setState(51);
 				((TeamContext)_localctx).s2 = pool();
-				 body.add(((TeamContext)_localctx).s2.node); 
+				 pools.add(((TeamContext)_localctx).s2.node); 
 				}
 				}
 				setState(58);
@@ -319,7 +320,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			}
 			setState(59);
 			match(CLOSE_CURLY_BRACKET);
-			 ((TeamContext)_localctx).node =  new Team(quantity, body); 
+			 ((TeamContext)_localctx).node =  new TeamAST(quantity, workers, pools); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -414,7 +415,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			}
 			setState(79);
 			match(CLOSE_CURLY_BRACKET);
-			 ((WorkerContext)_localctx).node =  new Worker(quantity, body); 
+			 ((WorkerContext)_localctx).node =  new WorkerAST(quantity, body); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -488,7 +489,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			}
 			setState(93);
 			match(CLOSE_CURLY_BRACKET);
-			 ((PoolContext)_localctx).node =  new Pool(body); 
+			 ((PoolContext)_localctx).node =  new PoolAST(body); 
 			}
 		}
 		catch (RecognitionException re) {

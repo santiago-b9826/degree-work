@@ -7,9 +7,9 @@ package com.udea.degreework;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
-	import com.udea.degreework.interpreter.ast.Pool;
-	import com.udea.degreework.interpreter.ast.Worker;
-	import com.udea.degreework.interpreter.ast.Team;
+	import com.udea.degreework.interpreter.ast.PoolAST;
+	import com.udea.degreework.interpreter.ast.WorkerAST;
+	import com.udea.degreework.interpreter.ast.TeamAST;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

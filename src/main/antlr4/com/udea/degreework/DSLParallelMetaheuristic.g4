@@ -7,9 +7,9 @@ grammar DSLParallelMetaheuristic;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
-	import com.udea.degreework.interpreter.ast.Pool;
-	import com.udea.degreework.interpreter.ast.Worker;
-	import com.udea.degreework.interpreter.ast.Team;
+	import com.udea.degreework.interpreter.ast.PoolAST;
+	import com.udea.degreework.interpreter.ast.WorkerAST;
+	import com.udea.degreework.interpreter.ast.TeamAST;
 }
 
 start: 
@@ -39,17 +39,18 @@ start:
 team returns [ASTNode node]: 
 	{ 
 		Constant quantity = new Constant(1);
-		List<ASTNode> body = new ArrayList<ASTNode>();
+		List<ASTNode> workers = new ArrayList<ASTNode>();
+		List<ASTNode> pools = new ArrayList<ASTNode>();
 	}
 	TEAM 
 		(LESS_THAN 
 			NUMBER { quantity = new Constant(Integer.parseInt($NUMBER.text)); }
 		GREATER_THAN)? 
 	OPEN_CURLY_BRACKET
-		(s1=worker { body.add($s1.node); })+
-		(s2=pool { body.add($s2.node); })*
+		(s1=worker { workers.add($s1.node); })+
+		(s2=pool { pools.add($s2.node); })*
 	CLOSE_CURLY_BRACKET
-	{ $node = new Team(quantity, body); };
+	{ $node = new TeamAST(quantity, workers, pools); };
 
 worker returns [ASTNode node]: 
 		{ 
@@ -63,14 +64,14 @@ worker returns [ASTNode node]:
 		OPEN_CURLY_BRACKET 
 			(s1=assign { body.add($s1.node); })*
 		CLOSE_CURLY_BRACKET
-		{ $node = new Worker(quantity, body); };
+		{ $node = new WorkerAST(quantity, body); };
 	
 pool returns [ASTNode node]: 
 	POOL OPEN_CURLY_BRACKET
 		{ List<ASTNode> body = new ArrayList<ASTNode>(); }
 		(s1=assign { body.add($s1.node); })*
 	CLOSE_CURLY_BRACKET
-	{ $node = new Pool(body); };
+	{ $node = new PoolAST(body); };
 	
 assign  returns [ASTNode node]:
 	{ 
