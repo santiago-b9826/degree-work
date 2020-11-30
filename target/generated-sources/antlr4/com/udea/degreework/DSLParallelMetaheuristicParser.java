@@ -7,6 +7,8 @@ package com.udea.degreework;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.Execution;
+	import com.udea.degreework.Team;
 	import com.udea.degreework.interpreter.ast.PoolAST;
 	import com.udea.degreework.interpreter.ast.WorkerAST;
 	import com.udea.degreework.interpreter.ast.TeamAST;
@@ -150,6 +152,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 					List<ASTNode> configBody = new ArrayList<ASTNode>();
 					List<ASTNode> executionBody = new ArrayList<ASTNode>();
 					Map<String, Object> symbolTable = new HashMap<String, Object>();
+					Map<String, Object> configSymbolTable = new HashMap<String, Object>();
 				
 			setState(11);
 			match(CONFIG);
@@ -193,15 +196,18 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			} while ( _la==TEAM );
 			setState(31);
 			match(CLOSE_CURLY_BRACKET);
-			 
-					for(ASTNode n : configBody) {
-						n.execute(symbolTable);
+
+					for(ASTNode configAssign : configBody) {
+						configAssign.execute(configSymbolTable);
 					}
-				
-			 
-					for(ASTNode n : executionBody) {
-						n.execute(symbolTable);
+					
+					List<Team> teams = new ArrayList<Team>();
+					for(ASTNode element : executionBody) {
+						teams.addAll((ArrayList<Team>)element.execute(symbolTable));
 					}
+					Execution execution = new Execution(teams);
+					execution.loadConfig(configSymbolTable);
+					execution.start();
 				
 			}
 		}
@@ -270,55 +276,55 @@ public class DSLParallelMetaheuristicParser extends Parser {
 					List<ASTNode> workers = new ArrayList<ASTNode>();
 					List<ASTNode> pools = new ArrayList<ASTNode>();
 				
-			setState(36);
+			setState(35);
 			match(TEAM);
-			setState(41);
+			setState(40);
 			_la = _input.LA(1);
 			if (_la==LESS_THAN) {
 				{
-				setState(37);
+				setState(36);
 				match(LESS_THAN);
-				setState(38);
+				setState(37);
 				((TeamContext)_localctx).NUMBER = match(NUMBER);
 				 quantity = new Constant(Integer.parseInt((((TeamContext)_localctx).NUMBER!=null?((TeamContext)_localctx).NUMBER.getText():null))); 
-				setState(40);
+				setState(39);
 				match(GREATER_THAN);
 				}
 			}
 
-			setState(43);
+			setState(42);
 			match(OPEN_CURLY_BRACKET);
-			setState(47); 
+			setState(46); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(44);
+				setState(43);
 				((TeamContext)_localctx).s1 = worker();
 				 workers.add(((TeamContext)_localctx).s1.node); 
 				}
 				}
-				setState(49); 
+				setState(48); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==WORKER );
-			setState(56);
+			setState(55);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==POOL) {
 				{
 				{
-				setState(51);
+				setState(50);
 				((TeamContext)_localctx).s2 = pool();
 				 pools.add(((TeamContext)_localctx).s2.node); 
 				}
 				}
-				setState(58);
+				setState(57);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(59);
+			setState(58);
 			match(CLOSE_CURLY_BRACKET);
 			 ((TeamContext)_localctx).node =  new TeamAST(quantity, workers, pools); 
 			}
@@ -380,40 +386,40 @@ public class DSLParallelMetaheuristicParser extends Parser {
 						Constant quantity = new Constant(1);
 						List<ASTNode> body = new ArrayList<ASTNode>();
 					
-			setState(63);
+			setState(62);
 			match(WORKER);
-			setState(68);
+			setState(67);
 			_la = _input.LA(1);
 			if (_la==LESS_THAN) {
 				{
-				setState(64);
+				setState(63);
 				match(LESS_THAN);
-				setState(65);
+				setState(64);
 				((WorkerContext)_localctx).NUMBER = match(NUMBER);
 				 quantity = new Constant(Integer.parseInt((((WorkerContext)_localctx).NUMBER!=null?((WorkerContext)_localctx).NUMBER.getText():null))); 
-				setState(67);
+				setState(66);
 				match(GREATER_THAN);
 				}
 			}
 
-			setState(70);
+			setState(69);
 			match(OPEN_CURLY_BRACKET);
-			setState(76);
+			setState(75);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==STRING) {
 				{
 				{
-				setState(71);
+				setState(70);
 				((WorkerContext)_localctx).s1 = assign();
 				 body.add(((WorkerContext)_localctx).s1.node); 
 				}
 				}
-				setState(78);
+				setState(77);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(79);
+			setState(78);
 			match(CLOSE_CURLY_BRACKET);
 			 ((WorkerContext)_localctx).node =  new WorkerAST(quantity, body); 
 			}
@@ -467,27 +473,27 @@ public class DSLParallelMetaheuristicParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
+			setState(81);
 			match(POOL);
-			setState(83);
+			setState(82);
 			match(OPEN_CURLY_BRACKET);
 			 List<ASTNode> body = new ArrayList<ASTNode>(); 
-			setState(90);
+			setState(89);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==STRING) {
 				{
 				{
-				setState(85);
+				setState(84);
 				((PoolContext)_localctx).s1 = assign();
 				 body.add(((PoolContext)_localctx).s1.node); 
 				}
 				}
-				setState(92);
+				setState(91);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(93);
+			setState(92);
 			match(CLOSE_CURLY_BRACKET);
 			 ((PoolContext)_localctx).node =  new PoolAST(body); 
 			}
@@ -542,23 +548,23 @@ public class DSLParallelMetaheuristicParser extends Parser {
 					String key;
 					Constant value;
 				
-			setState(97);
+			setState(96);
 			((AssignContext)_localctx).STRING = match(STRING);
 			 key = String.valueOf((((AssignContext)_localctx).STRING!=null?((AssignContext)_localctx).STRING.getText():null)); 
-			setState(99);
+			setState(98);
 			match(COLON);
-			setState(104);
+			setState(103);
 			switch (_input.LA(1)) {
 			case STRING:
 				{
-				setState(100);
+				setState(99);
 				((AssignContext)_localctx).STRING = match(STRING);
 				 value = new Constant(String.valueOf((((AssignContext)_localctx).STRING!=null?((AssignContext)_localctx).STRING.getText():null))); 
 				}
 				break;
 			case NUMBER:
 				{
-				setState(102);
+				setState(101);
 				((AssignContext)_localctx).NUMBER = match(NUMBER);
 				 value = new Constant(Integer.parseInt((((AssignContext)_localctx).NUMBER!=null?((AssignContext)_localctx).NUMBER.getText():null))); 
 				}
@@ -581,33 +587,33 @@ public class DSLParallelMetaheuristicParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\21o\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\21n\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\2\3\2\3\2\3\2\7\2\23\n\2\f\2\16\2"+
 		"\26\13\2\3\2\3\2\3\2\3\2\3\2\3\2\6\2\36\n\2\r\2\16\2\37\3\2\3\2\3\2\3"+
-		"\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3,\n\3\3\3\3\3\3\3\3\3\6\3\62\n\3\r\3\16"+
-		"\3\63\3\3\3\3\3\3\7\39\n\3\f\3\16\3<\13\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4"+
-		"\3\4\3\4\5\4G\n\4\3\4\3\4\3\4\3\4\7\4M\n\4\f\4\16\4P\13\4\3\4\3\4\3\4"+
-		"\3\5\3\5\3\5\3\5\3\5\3\5\7\5[\n\5\f\5\16\5^\13\5\3\5\3\5\3\5\3\6\3\6\3"+
-		"\6\3\6\3\6\3\6\3\6\3\6\5\6k\n\6\3\6\3\6\3\6\2\2\7\2\4\6\b\n\2\2r\2\f\3"+
-		"\2\2\2\4%\3\2\2\2\6@\3\2\2\2\bT\3\2\2\2\nb\3\2\2\2\f\r\b\2\1\2\r\16\7"+
-		"\3\2\2\16\24\7\b\2\2\17\20\5\n\6\2\20\21\b\2\1\2\21\23\3\2\2\2\22\17\3"+
-		"\2\2\2\23\26\3\2\2\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3"+
-		"\2\2\2\27\30\7\t\2\2\30\31\7\4\2\2\31\35\7\b\2\2\32\33\5\4\3\2\33\34\b"+
-		"\2\1\2\34\36\3\2\2\2\35\32\3\2\2\2\36\37\3\2\2\2\37\35\3\2\2\2\37 \3\2"+
-		"\2\2 !\3\2\2\2!\"\7\t\2\2\"#\b\2\1\2#$\b\2\1\2$\3\3\2\2\2%&\b\3\1\2&+"+
-		"\7\5\2\2\'(\7\13\2\2()\7\17\2\2)*\b\3\1\2*,\7\n\2\2+\'\3\2\2\2+,\3\2\2"+
-		"\2,-\3\2\2\2-\61\7\b\2\2./\5\6\4\2/\60\b\3\1\2\60\62\3\2\2\2\61.\3\2\2"+
-		"\2\62\63\3\2\2\2\63\61\3\2\2\2\63\64\3\2\2\2\64:\3\2\2\2\65\66\5\b\5\2"+
-		"\66\67\b\3\1\2\679\3\2\2\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;"+
-		"=\3\2\2\2<:\3\2\2\2=>\7\t\2\2>?\b\3\1\2?\5\3\2\2\2@A\b\4\1\2AF\7\6\2\2"+
-		"BC\7\13\2\2CD\7\17\2\2DE\b\4\1\2EG\7\n\2\2FB\3\2\2\2FG\3\2\2\2GH\3\2\2"+
-		"\2HN\7\b\2\2IJ\5\n\6\2JK\b\4\1\2KM\3\2\2\2LI\3\2\2\2MP\3\2\2\2NL\3\2\2"+
-		"\2NO\3\2\2\2OQ\3\2\2\2PN\3\2\2\2QR\7\t\2\2RS\b\4\1\2S\7\3\2\2\2TU\7\7"+
-		"\2\2UV\7\b\2\2V\\\b\5\1\2WX\5\n\6\2XY\b\5\1\2Y[\3\2\2\2ZW\3\2\2\2[^\3"+
-		"\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]_\3\2\2\2^\\\3\2\2\2_`\7\t\2\2`a\b\5\1\2"+
-		"a\t\3\2\2\2bc\b\6\1\2cd\7\20\2\2de\b\6\1\2ej\7\r\2\2fg\7\20\2\2gk\b\6"+
-		"\1\2hi\7\17\2\2ik\b\6\1\2jf\3\2\2\2jh\3\2\2\2kl\3\2\2\2lm\b\6\1\2m\13"+
-		"\3\2\2\2\13\24\37+\63:FN\\j";
+		"\3\3\3\3\3\3\3\3\3\3\3\5\3+\n\3\3\3\3\3\3\3\3\3\6\3\61\n\3\r\3\16\3\62"+
+		"\3\3\3\3\3\3\7\38\n\3\f\3\16\3;\13\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3"+
+		"\4\5\4F\n\4\3\4\3\4\3\4\3\4\7\4L\n\4\f\4\16\4O\13\4\3\4\3\4\3\4\3\5\3"+
+		"\5\3\5\3\5\3\5\3\5\7\5Z\n\5\f\5\16\5]\13\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6"+
+		"\3\6\3\6\3\6\3\6\5\6j\n\6\3\6\3\6\3\6\2\2\7\2\4\6\b\n\2\2q\2\f\3\2\2\2"+
+		"\4$\3\2\2\2\6?\3\2\2\2\bS\3\2\2\2\na\3\2\2\2\f\r\b\2\1\2\r\16\7\3\2\2"+
+		"\16\24\7\b\2\2\17\20\5\n\6\2\20\21\b\2\1\2\21\23\3\2\2\2\22\17\3\2\2\2"+
+		"\23\26\3\2\2\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2"+
+		"\27\30\7\t\2\2\30\31\7\4\2\2\31\35\7\b\2\2\32\33\5\4\3\2\33\34\b\2\1\2"+
+		"\34\36\3\2\2\2\35\32\3\2\2\2\36\37\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 "+
+		"!\3\2\2\2!\"\7\t\2\2\"#\b\2\1\2#\3\3\2\2\2$%\b\3\1\2%*\7\5\2\2&\'\7\13"+
+		"\2\2\'(\7\17\2\2()\b\3\1\2)+\7\n\2\2*&\3\2\2\2*+\3\2\2\2+,\3\2\2\2,\60"+
+		"\7\b\2\2-.\5\6\4\2./\b\3\1\2/\61\3\2\2\2\60-\3\2\2\2\61\62\3\2\2\2\62"+
+		"\60\3\2\2\2\62\63\3\2\2\2\639\3\2\2\2\64\65\5\b\5\2\65\66\b\3\1\2\668"+
+		"\3\2\2\2\67\64\3\2\2\28;\3\2\2\29\67\3\2\2\29:\3\2\2\2:<\3\2\2\2;9\3\2"+
+		"\2\2<=\7\t\2\2=>\b\3\1\2>\5\3\2\2\2?@\b\4\1\2@E\7\6\2\2AB\7\13\2\2BC\7"+
+		"\17\2\2CD\b\4\1\2DF\7\n\2\2EA\3\2\2\2EF\3\2\2\2FG\3\2\2\2GM\7\b\2\2HI"+
+		"\5\n\6\2IJ\b\4\1\2JL\3\2\2\2KH\3\2\2\2LO\3\2\2\2MK\3\2\2\2MN\3\2\2\2N"+
+		"P\3\2\2\2OM\3\2\2\2PQ\7\t\2\2QR\b\4\1\2R\7\3\2\2\2ST\7\7\2\2TU\7\b\2\2"+
+		"U[\b\5\1\2VW\5\n\6\2WX\b\5\1\2XZ\3\2\2\2YV\3\2\2\2Z]\3\2\2\2[Y\3\2\2\2"+
+		"[\\\3\2\2\2\\^\3\2\2\2][\3\2\2\2^_\7\t\2\2_`\b\5\1\2`\t\3\2\2\2ab\b\6"+
+		"\1\2bc\7\20\2\2cd\b\6\1\2di\7\r\2\2ef\7\20\2\2fj\b\6\1\2gh\7\17\2\2hj"+
+		"\b\6\1\2ie\3\2\2\2ig\3\2\2\2jk\3\2\2\2kl\b\6\1\2l\13\3\2\2\2\13\24\37"+
+		"*\629EM[i";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -7,6 +7,8 @@ package com.udea.degreework;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.Execution;
+	import com.udea.degreework.Team;
 	import com.udea.degreework.interpreter.ast.PoolAST;
 	import com.udea.degreework.interpreter.ast.WorkerAST;
 	import com.udea.degreework.interpreter.ast.TeamAST;

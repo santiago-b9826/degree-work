@@ -7,6 +7,8 @@ grammar DSLParallelMetaheuristic;
 	import com.udea.degreework.interpreter.ast.ASTNode;
 	import com.udea.degreework.interpreter.ast.Assign;
 	import com.udea.degreework.interpreter.ast.Constant;
+	import com.udea.degreework.Execution;
+	import com.udea.degreework.Team;
 	import com.udea.degreework.interpreter.ast.PoolAST;
 	import com.udea.degreework.interpreter.ast.WorkerAST;
 	import com.udea.degreework.interpreter.ast.TeamAST;
@@ -17,6 +19,7 @@ start:
 		List<ASTNode> configBody = new ArrayList<ASTNode>();
 		List<ASTNode> executionBody = new ArrayList<ASTNode>();
 		Map<String, Object> symbolTable = new HashMap<String, Object>();
+		Map<String, Object> configSymbolTable = new HashMap<String, Object>();
 	}
 	CONFIG OPEN_CURLY_BRACKET 
 		(s1=assign { configBody.add($s1.node); })*
@@ -25,15 +28,18 @@ start:
 	EXECUTION OPEN_CURLY_BRACKET 
 		(s2=team { executionBody.add($s2.node); })+
 	CLOSE_CURLY_BRACKET
-	{ 
-		for(ASTNode n : configBody) {
-			n.execute(symbolTable);
+	{
+		for(ASTNode configAssign : configBody) {
+			configAssign.execute(configSymbolTable);
 		}
-	}
-	{ 
-		for(ASTNode n : executionBody) {
-			n.execute(symbolTable);
+		
+		List<Team> teams = new ArrayList<Team>();
+		for(ASTNode element : executionBody) {
+			teams.addAll((ArrayList<Team>)element.execute(symbolTable));
 		}
+		Execution execution = new Execution(teams);
+		execution.loadConfig(configSymbolTable);
+		execution.start();
 	};
 
 team returns [ASTNode node]: 

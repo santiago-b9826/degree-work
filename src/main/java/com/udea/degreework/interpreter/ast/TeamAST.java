@@ -23,20 +23,21 @@ public class TeamAST implements ASTNode {
 
 	@Override
 	public Object execute(Map<String, Object> symbolTable) throws Exception {
-
-		List<Worker> workers = new ArrayList<Worker>();
-		List<Pool> pools = new ArrayList<Pool>();
+		List<Team> teams = new ArrayList<Team>();
 		
 		for (int i = 0; i < (int) this.quantity.execute(null); i++) {
+			List<Worker> workers = new ArrayList<Worker>();
+			List<Pool> pools = new ArrayList<Pool>();
 			for (ASTNode worker : workersAST) {
 				workers.addAll((ArrayList<Worker>) worker.execute(symbolTable));
 			}
 			for (ASTNode pool : poolsAST) {
 				pools.add((Pool)pool.execute(symbolTable));
 			}
+			teams.add(new Team(workers, pools));
 		}
 
-		return new Team(workers, pools);
+		return teams;
 	}
 
 }

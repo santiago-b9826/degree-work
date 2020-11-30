@@ -7,9 +7,16 @@ public class Team {
 	private List<Pool> pools;
 	
 	public Team(List<Worker> workers, List<Pool> pools) {
-		super();
 		this.workers = workers;
 		this.pools = pools;
 	}
-	
+
+	public List<Worker> getWorkers() {
+		return workers;
+	}
+
+	public List<Pool> getPools() {
+		return pools;
+	}
+
 }
