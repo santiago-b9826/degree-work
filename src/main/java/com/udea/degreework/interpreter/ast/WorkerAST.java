@@ -35,23 +35,21 @@ public class WorkerAST implements ASTNode {
 		validateData(mapObject);
 
 		String metaheuristicType = String.valueOf(mapObject.get("MH"));
-		int poolRequestId = (int) mapObject.get("poolRequest");
-		int poolUpdateId = (int) mapObject.get("poolUpdate");
-		double seed = Double.valueOf(String.valueOf(mapObject.get("seed")).toString());
+		int poolRequestId = (int) mapObject.get("requestPool");
+		int poolUpdateId = (int) mapObject.get("updatePool");
+//		double seed = Double.valueOf(String.valueOf(mapObject.get("seed")).toString());
 
-		return new Worker(seed, metaheuristicType, poolRequestId, poolUpdateId);
+		return new Worker(metaheuristicType, poolRequestId, poolUpdateId);
 	}
 
 	private void validateData(Map<String, Object> mapObject) {
 		try {
 			if (mapObject.get("MH") == null) {
 				throw new Exception("Worker: MH is Expected");
-			} else if (mapObject.get("poolRequest") == null) {
-				throw new Exception("Worker: poolRequest is Expected");
-			} else if (mapObject.get("poolUpdate") == null) {
-				throw new Exception("Worker: poolUpdate is Expected");
-			} else if (mapObject.get("seed") == null) {
-				throw new Exception("Worker: seed is Expected");
+			} else if (mapObject.get("requestPool") == null) {
+				throw new Exception("Worker: requestPool is Expected");
+			} else if (mapObject.get("updatePool") == null) {
+				throw new Exception("Worker: updatePool is Expected");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

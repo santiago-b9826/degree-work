@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.udea.degreework.model.QAPModel;
+
 public class Execution {
 	private List<Team> teams = new ArrayList<Team>();
 	private Map<String, Object> config = new HashMap<String, Object>();
@@ -19,7 +21,12 @@ public class Execution {
 	}
 
 	public void start() {
-		System.out.println("Starting execution");
+        QAPModel model = new QAPModel((int)config.get("size"));
+        model.loadData(String.valueOf(config.get("filePath")));
+		
+        for (Team team : teams) {
+			team.start(model, config);
+		}
 	}
 
 	private void validateData() {

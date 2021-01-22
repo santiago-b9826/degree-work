@@ -197,6 +197,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			setState(31);
 			match(CLOSE_CURLY_BRACKET);
 
+					System.out.println("");
 					for(ASTNode configAssign : configBody) {
 						configAssign.execute(configSymbolTable);
 					}

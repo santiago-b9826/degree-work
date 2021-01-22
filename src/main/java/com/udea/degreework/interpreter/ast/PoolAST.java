@@ -28,7 +28,7 @@ public class PoolAST implements ASTNode {
 		
 		validateData(mapObject);
 		
-		String id = String.valueOf(mapObject.get("ID"));
+		int id = (int)mapObject.get("ID");
 		String policy = String.valueOf(mapObject.get("policy"));
 		int size = (int)mapObject.get("size");
 
@@ -39,10 +39,26 @@ public class PoolAST implements ASTNode {
 		try {
 			if (mapObject.get("ID") == null) {
 				throw new Exception("Pool: ID is Expected");
-			} else if (mapObject.get("policy") == null) {
+			} else {
+				try {
+					int id = (int)mapObject.get("ID");
+				} catch (Exception e) {
+					throw new Exception("Pool Id must be a number");
+				}
+			}
+			
+			if (mapObject.get("policy") == null) {
 				throw new Exception("Pool: policy is Expected");
-			} else if (mapObject.get("size") == null) {
+			}
+			
+			if (mapObject.get("size") == null) {
 				throw new Exception("Pool: size is Expected");
+			} else {
+				try {
+					int size = (int)mapObject.get("size");
+				} catch (Exception e) {
+					throw new Exception("Pool size must be a number");
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

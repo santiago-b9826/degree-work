@@ -1,22 +1,28 @@
 package com.udea.degreework;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Pool {
 
     private int size;
-    private String id;
+    private int id;
     private String policy;
+    private List<ContextInformation> pool;
 
     public Pool(int size) {
         this.size = size;
     }
 
-    public Pool(int size, String id, String policy) {
+    public Pool(int size, int id, String policy) {
 		this.size = size;
 		this.id = id;
 		this.policy = policy;
+		pool = new ArrayList<>(size);
 	}
     
-	public String getId() {
+	public int getId() {
         return id;
     }
 
@@ -36,7 +42,25 @@ public class Pool {
 		this.policy = policy;
 	}
 
-//    public synchronized void comm(ContextInformation message){
-//
-//    }
+	public synchronized void sendInfo(ContextInformation message){
+        if (pool.size() < size){
+            pool.add(message);
+        }else{
+            //pool is full
+            //int index = pool.stream().min(Comparator.comparing(ContextInformation::getCost)).hashCode();
+            int maxCost = -1;
+            int maxIndex = -1;
+            for(int i = 0; i < pool.size(); i++){
+                if(pool.get(i).getCost() > maxCost){
+                    maxCost = pool.get(i).getCost();
+                    maxIndex = i;
+                }
+            }
+            pool.set(maxIndex, message);
+        }
+    }
+
+    public synchronized ContextInformation getInfo(){
+        return pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+    }
 }

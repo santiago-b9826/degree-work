@@ -29,6 +29,7 @@ start:
 		(s2=team { executionBody.add($s2.node); })+
 	CLOSE_CURLY_BRACKET
 	{
+		System.out.println("");
 		for(ASTNode configAssign : configBody) {
 			configAssign.execute(configSymbolTable);
 		}
@@ -108,6 +109,6 @@ COLON: ':';
 COMMA: ',';
 
 NUMBER: [0-9]+;
-STRING: [a-zA-Z0-9_\-]+;
+STRING: [a-zA-Z0-9_\-\/\.\"]+;
 
 WS :[ \t\r\n]+ -> skip;

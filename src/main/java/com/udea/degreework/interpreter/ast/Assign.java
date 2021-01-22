@@ -16,7 +16,7 @@ public class Assign implements ASTNode {
 	@Override
 	public Object execute(Map<String, Object> symbolTable) throws Exception {
 		try {
-			System.out.printf("%s: %s\n", key, String.valueOf(value.execute(symbolTable)));
+//			System.out.printf("%s: %s\n", key, String.valueOf(value.execute(symbolTable)));
 			if(symbolTable.containsKey(key)) {
 				throw new Exception("Duplicate key " + key + ": " + value.execute(null));
 			}
