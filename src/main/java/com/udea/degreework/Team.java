@@ -36,7 +36,7 @@ public class Team {
         AtomicBoolean kill = new AtomicBoolean(false);
 
         for (int i = 0; i < workers.size(); i++) {        
-        	workers.get(i).setWorker(i, model, pools, configuration, kill, targetCost, strictLow);
+        	workers.get(i).setWorker(i, new QAPModel(model), pools, configuration, kill, targetCost, strictLow);
             myPool.submit(workers.get(i));
             //workers.get(i).compute();
             //w.fork();
