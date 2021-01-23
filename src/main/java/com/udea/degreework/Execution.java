@@ -40,17 +40,21 @@ public class Execution {
 //				throw new Exception("Config:  is Expected");
 //			}
 			
-			if(config.get("numberOfTeams") != null) {
+			if (config.get("numberOfTeams") != null) {
 				if(teams.size() != (int)config.get("numberOfTeams")) {
 					throw new Exception("Config: the expected numberOfTeams is different from the declared teams");
 				}
 			}
 			
-			if (config.get("numberOfWorkersPerTeam") != null) {
-				int numberOfWorkersPerTeam = (int) config.get("numberOfWorkersPerTeam");
-				for (Team team : teams) {
-					if (team.getWorkers().size() != numberOfWorkersPerTeam) {
-						throw new Exception("Config: the expected numberOfWorkersPerTeam is different from the declared workers per team");
+			if (config.get("equalNumberOfWorkersPerTeam") != null) {
+				boolean equalNumberOfWorkersPerTeam = Boolean.valueOf(String.valueOf(config.get("equalNumberOfWorkersPerTeam")));
+			
+				if (config.get("numberOfWorkersPerTeam") != null && equalNumberOfWorkersPerTeam) {
+					int numberOfWorkersPerTeam = (int) config.get("numberOfWorkersPerTeam");
+					for (Team team : teams) {
+						if (team.getWorkers().size() != numberOfWorkersPerTeam) {
+							throw new Exception("Config: the expected numberOfWorkersPerTeam("+ numberOfWorkersPerTeam +") is different from the declared workers per team(Total: " + team.getWorkers().size() + ")");
+						}
 					}
 				}
 			}
