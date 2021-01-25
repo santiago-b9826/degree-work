@@ -246,22 +246,34 @@ public class QAPModel {
                 i++;
                 j = 0;
                 if (i >= 2 && i < sizeF + 2){
+                	//System.out.println("mF:"+i+" :"+line);
                     //reading flow matrix
                     if (j < sizeF){
-                        for (int k = 0; k < sizeF; k++) {
+                        /*for (int k = 0; k < sizeF; k++) {
                             if (splitStr[k].isEmpty()){continue;}
                             //System.out.println(k+": "+splitStr[k]);
                             flow[fLine][k] = Integer.parseInt(splitStr[k]);;
+                        }*/
+                        int k = 0;
+                        for(String s: splitStr) {
+                        	if(s.isEmpty()) {continue;}
+                        	flow[fLine][k++] = Integer.parseInt(s);
                         }
+                        
                     }
                     fLine++;
                 }else if (i > sizeF + 2 && i <= sizeF * 2 + 2){
                     //System.out.println("mD:"+i+" :"+line);
                     // Reading Distance Matrix
                     if (j < sizeF){
-                        for (int k = 0; k < sizeF; k++) {
+                        /*for (int k = 0; k < sizeF; k++) {
                             if (splitStr[k].isEmpty()){continue;}
                             dist[dLine][k] = Integer.parseInt(splitStr[k]);
+                        }*/
+                        int k = 0;
+                        for(String s: splitStr) {
+                        	if(s.isEmpty()) {continue;}
+                        	dist[dLine][k++] = Integer.parseInt(s);
                         }
                     }
                     dLine++;

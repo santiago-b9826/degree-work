@@ -272,8 +272,8 @@ public class Worker extends RecursiveAction {
         if(currentCost < bestCost){ //(totalCost <= bestCost)
             bestConf = metaheuristic.getVariables().clone();
 
-            System.out.println("                    "+ MHType.toString() +"-"+id+ ": Current time: " + (System.nanoTime()-initialTime)/1e6 + ". Cost: " + this.currentCost);
-            metaheuristic.verify(bestConf);
+            //System.out.println("                    "+ MHType.toString() +"-"+id+ ": Current time: " + (System.nanoTime()-initialTime)/1e6 + ". Cost: " + this.currentCost);
+            //metaheuristic.verify(bestConf);
             bestCost = currentCost;
 
             bestSent = false; // new best found, I must send it!

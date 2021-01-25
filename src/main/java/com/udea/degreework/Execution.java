@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.udea.degreework.model.QAPModel;
 
 public class Execution {
 	private List<Team> teams = new ArrayList<Team>();
 	private Map<String, Object> config = new HashMap<String, Object>();
+	private int[] bestConf;
 
 	public Execution(List<Team> teams) {
 		this.teams = teams;
@@ -23,10 +25,46 @@ public class Execution {
 	public void start() {
         QAPModel model = new QAPModel((int)config.get("size"));
         model.loadData(String.valueOf(config.get("filePath")));
+        AtomicBoolean kill = new AtomicBoolean(false);
 		
-        for (Team team : teams) {
-			team.start(model, config);
+        double initialTime = System.nanoTime();
+        
+        for (int i = 0; i < teams.size(); i++) {
+        	teams.get(i).setTeam(i+1, model, config, kill);
+			teams.get(i).fork();
 		}
+        
+        for (int i = 0; i < teams.size(); i++) {
+        	teams.get(i).join();
+		}
+        
+        int bestCost = Integer.MAX_VALUE;
+        int bestWId = -1;
+        int bestTId = -1;
+        String bestMeta="";
+        
+        for (int i = 0; i < teams.size(); i++)  {
+        	if(teams.get(i).getBestCost() < bestCost) {
+        		bestCost = teams.get(i).getBestCost();
+        		bestWId = teams.get(i).getBestWId();
+        		bestTId = teams.get(i).getId();
+        		bestMeta = teams.get(i).getBestMeta();
+        	}
+        }
+        
+        bestConf = teams.get(bestTId-1).getBestConf();
+        
+        for(int i = 0; i < bestConf.length; i++) {
+        	System.out.print(" "+bestConf[i]);
+        }
+        
+        double endTime = System.nanoTime();
+        
+        System.out.print("");
+        model.verify(bestConf.length, bestConf);
+        System.out.println("\nExecution: all teams have finished");
+        System.out.println("Best worker of whole execution is TeamID: "+ bestTId+" workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
+        System.out.println("Execution time"+(endTime-initialTime)/1e6+" ms");
 	}
 
 	private void validateData() {

@@ -1,14 +1,14 @@
 Config {
-    size: 15
+    size: 72
     model: QAP
-    target: 306
+    target: 66256
     errorRange: 3
     updatePoolI: 200000
     requestPoolI: 1000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 3
     equalNumberOfWorkersPerTeam: true
-	filePath: /Users/dannymunera/Documents/repos/degree-work/src/main/java/com/udea/degreework/dre15.qap
+	filePath: /Users/dannymunera/Documents/repos/degree-work/sko72.qap
 }
 
 Execution {
