@@ -1,6 +1,7 @@
 package com.udea.degreework;
 
 import com.udea.degreework.model.QAPModel;
+import com.udea.degreework.solver.Metaheuristic;
 
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,23 @@ public class Team {
             workers.get(i).join();
         }
 
+        int bestCost = Integer.MAX_VALUE;
+        int bestId = -1;
+        String bestMeta="";
+        
+        for (int i = 0; i < workers.size(); i++)  {
+        	if(workers.get(i).getBestCost() < bestCost) {
+        		bestCost = workers.get(i).getBestCost();
+        		bestId = workers.get(i).getId();
+        		bestMeta = workers.get(i).getMHType().toString();
+        	}
+        }
+        
+        
+        
         //workers.parallelStream().map(w -> w.solve()).collect(Collectors.toList());
         System.out.println("Team: all workers have finished");
+        System.out.println("Best worker of TEAM  ID: "+bestId+"-"+bestMeta+" BestCost: "+bestCost);
 	}
 
 }

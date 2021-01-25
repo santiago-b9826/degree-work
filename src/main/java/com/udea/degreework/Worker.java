@@ -27,7 +27,15 @@ public class Worker extends RecursiveAction {
     private int currentCost;
     private int[] bestConf;
     private int bestCost;
-    private boolean bestSent = false;
+    public int[] getBestConf() {
+		return bestConf;
+	}
+
+	public int getBestCost() {
+		return bestCost;
+	}
+
+	private boolean bestSent = false;
 
     private int target = 0;
     private boolean strictLow = false;
@@ -48,7 +56,11 @@ public class Worker extends RecursiveAction {
     private int nChange;
     private long initialTime;
     private Metaheuristic.Type MHType;
-    private AtomicBoolean kill;
+    public Metaheuristic.Type getMHType() {
+		return MHType;
+	}
+
+	private AtomicBoolean kill;
     
     
     public Worker(String metaheuristicType, int requestPoolId, int updatePoolId) {

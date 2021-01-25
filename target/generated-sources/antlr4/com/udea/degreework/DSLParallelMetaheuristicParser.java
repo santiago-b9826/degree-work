@@ -141,7 +141,7 @@ public class DSLParallelMetaheuristicParser extends Parser {
 		}
 	}
 
-	public final StartContext start() throws Exception {
+	public final StartContext start() throws RecognitionException {
 		StartContext _localctx = new StartContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_start);
 		int _la;
@@ -216,6 +216,9 @@ public class DSLParallelMetaheuristicParser extends Parser {
 			_localctx.exception = re;
 			_errHandler.reportError(this, re);
 			_errHandler.recover(this, re);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		finally {
 			exitRule();

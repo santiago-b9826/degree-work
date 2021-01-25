@@ -5,25 +5,25 @@ Config {
     errorRange: 3
     updatePoolI: 200000
     requestPoolI: 1000
-    numberOfTeams: 1
-    numberOfWorkersPerTeam: 10
+    numberOfTeams: 2
+    numberOfWorkersPerTeam: 3
     equalNumberOfWorkersPerTeam: true
-	filePath: /home/santiago/IdeaProjects/model-dls/src/main/java/dre15.qap
+	filePath: /Users/dannymunera/Documents/repos/degree-work/src/main/java/com/udea/degreework/dre15.qap
 }
 
 Execution {
-	Team {
-		Worker <4> {
+	Team <2>{
+		Worker <1> {
 			MH: Adaptive
 			updatePool: 1
 			requestPool: 1
 		}
-		Worker <3> {
+		Worker <1> {
 			MH: Extremal
 			updatePool: 1
 			requestPool: 1
 		}
-		Worker <3> {
+		Worker <1> {
 			MH: RoT
 			updatePool: 1
 			requestPool: 1
