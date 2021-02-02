@@ -64,7 +64,7 @@ public class Execution {
         model.verify(bestConf.length, bestConf);
         System.out.println("\nExecution: all teams have finished");
         System.out.println("Best worker of whole execution is TeamID: "+ bestTId+" workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
-        System.out.println("Execution time"+(endTime-initialTime)/1e6+" ms");
+        System.out.println("Execution time: "+(endTime-initialTime)/1e6+" ms");
 	}
 
 	private void validateData() {

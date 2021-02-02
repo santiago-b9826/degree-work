@@ -3,8 +3,8 @@ Config {
     model: QAP
     target: 66256
     errorRange: 3
-    updatePoolI: 200000
-    requestPoolI: 1000
+    updatePoolI: 1000
+    requestPoolI: 20000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 3
     equalNumberOfWorkersPerTeam: true
@@ -15,17 +15,17 @@ Execution {
 	Team <2>{
 		Worker <1> {
 			MH: Adaptive
-			updatePool: 1
+			updatePool: 2
 			requestPool: 1
 		}
 		Worker <1> {
 			MH: Extremal
 			updatePool: 1
-			requestPool: 1
+			requestPool: 2
 		}
 		Worker <1> {
 			MH: RoT
-			updatePool: 1
+			updatePool: 2
 			requestPool: 1
 		}
 		Pool { 

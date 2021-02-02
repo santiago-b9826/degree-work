@@ -317,16 +317,17 @@ public class Worker extends RecursiveAction {
     }
 
     private void interactForIntensification(){
-        if(nIter % requestI == 0){
-            requestPool.sendInfo(new ContextInformation(metaheuristic.variables.clone(), currentCost, MHType));
-        }
         if(nIter % updateI == 0){
-            ContextInformation recv = updatePool.getInfo();
+            updatePool.insertInfo(new ContextInformation(metaheuristic.variables.clone(), currentCost, MHType));
+        }
+        if(nIter % requestI == 0){
+            ContextInformation recv = requestPool.getInfo();
             if(recv.getCost() <= currentCost){
                 metaheuristic.variables = recv.getVariables().clone();
                 currentCost = metaheuristic.costOfSolution();
                 nChange++;
-            }
+            } 
+            // TODO: change I've not been able to improve in a while
         }
     }
 }
