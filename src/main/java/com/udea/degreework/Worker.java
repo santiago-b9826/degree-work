@@ -27,16 +27,13 @@ public class Worker extends RecursiveAction {
     private int currentCost;
     private int[] bestConf;
     private int bestCost;
-    public int[] getBestConf() {
-		return bestConf;
-	}
-
-	public int getBestCost() {
-		return bestCost;
-	}
-
+    
 	private boolean bestSent = false;
-
+	
+	// stopping criteria
+	private int maxTime;
+	private int maxIters;
+	private int maxRestart;
     private int target = 0;
     private boolean strictLow = false;
     private boolean targetSucc = false;
@@ -48,20 +45,26 @@ public class Worker extends RecursiveAction {
     private int nIterTot;
     private int nSwapTot;
     private int itersWhitoutImprovements;
-
-    public int getnChange() {
-        return nChange;
-    }
-
     private int nChange;
     private long initialTime;
     private Metaheuristic.Type MHType;
-    public Metaheuristic.Type getMHType() {
+    private AtomicBoolean kill;
+    
+    public int getnChange() {
+        return nChange;
+    }
+    
+	public Metaheuristic.Type getMHType() {
 		return MHType;
 	}
+	
+	public int[] getBestConf() {
+		return bestConf;
+	}
 
-	private AtomicBoolean kill;
-    
+	public int getBestCost() {
+		return bestCost;
+	}
     
     public Worker(String metaheuristicType, int requestPoolId, int updatePoolId) {
 		super();
@@ -113,6 +116,17 @@ public class Worker extends RecursiveAction {
         metaheuristic.configHeuristic(model);
     	bestConf = new int[size];
     	
+    	Object valOrNull = configuration.get("maxTime");
+    	maxTime = valOrNull == null ? 60000 : (int) valOrNull;
+    	
+    	valOrNull = configuration.get("maxIters");
+    	maxIters = valOrNull == null  ? Integer.MAX_VALUE : (int) valOrNull;   
+    	
+    	valOrNull = configuration.get("maxRestart");
+    	maxRestart = valOrNull == null ? 0 : (int) valOrNull; 
+    	
+    	System.out.println(MHType.toString()+"-"+id+": MaxTime "+maxTime+" MaxIters "+maxIters+" MaxRestart "+maxRestart);
+    	
     	this.kill = kill;
     	target = tCost;
     	strictLow = sLow;
@@ -160,12 +174,12 @@ public class Worker extends RecursiveAction {
     public void compute() {
         int cost;
 
-        System.out.println("Starting solving process "+ MHType.toString()+"-"+id);
+        System.out.println(MHType.toString()+"-"+id+": Starting solving proces");
         initialTime = System.nanoTime();
         cost = solve();
         double exTime = (System.nanoTime() - initialTime)/1e6;
 
-        System.out.println("Solving process finished Meta type "+ MHType.toString()+"-"+id+". Time: "+exTime+" ms best cost: "+ bestCost);
+        System.out.println("             Solving process finished Meta type "+ MHType.toString()+"-"+id+". Time: "+exTime+" ms best cost: "+ bestCost);
     }
 
     protected void initVar(int tCost, boolean sLow){
@@ -187,7 +201,7 @@ public class Worker extends RecursiveAction {
         nSwapTot = 0;
         initialTime = System.nanoTime();
         // Comm
-        //bestSent = false;
+        bestSent = false;
         //nForceRestart = 0n;
         nChange = 0;
         //nChangeforiwi = 0n;
@@ -203,15 +217,16 @@ public class Worker extends RecursiveAction {
         currentCost = metaheuristic.costOfSolution();
         bestConf = metaheuristic.getVariables().clone();
 
-        System.out.println(MHType.toString()+": initial cost= "+ currentCost);
+        System.out.println(MHType.toString()+"-"+id+": initial cost= "+ currentCost);
 
         bestCost = currentCost; //Best solution is the initial solution
 
         while(currentCost >= 0){
-            if (nIter >= 1000000){ //TODO: get parameter//this.nodeConfig.getMaxIters()){
+            if (nIter >= maxIters){ 
                 //restart or finish
-                if(nRestart >= 0){ //TODO: get parameter //this.nodeConfig.getMaxRestarts()){
-                    break;
+                if(nRestart >= maxRestart){ 
+                    System.out.println(MHType.toString()+"-"+id+": MaxIters and Restarts done");
+                	break;                
                 }else{
                     nRestart++;
                     metaheuristic.initVariables();
@@ -236,7 +251,6 @@ public class Worker extends RecursiveAction {
 
             //System.out.println("Type:"+MHType.toString()+"-"+id+" In main LOOP  time "+(System.nanoTime() - this.initialTime)/1e6 +" cost="+this.currentCost);
             //Time out
-            int maxTime = 100000;
             if(maxTime > 0 ){ //TODO: get parameter //nodeConfig.getMaxTime() > 0){
                 double eTime = System.nanoTime() - this.initialTime;
                 if(eTime/1e6 >= maxTime){ //comparison in miliseconds
@@ -318,15 +332,22 @@ public class Worker extends RecursiveAction {
 
     private void interactForIntensification(){
         if(nIter % updateI == 0){
-            updatePool.insertInfo(new ContextInformation(metaheuristic.variables.clone(), currentCost, MHType));
+        	if(!bestSent) {
+        		updatePool.insertInfo(new ContextInformation(bestConf.clone(), bestCost, MHType));
+        		bestSent = true;
+        	} else {
+        		updatePool.insertInfo(new ContextInformation(metaheuristic.variables.clone(), currentCost, MHType));
+        	}
         }
         if(nIter % requestI == 0){
             ContextInformation recv = requestPool.getInfo();
-            if(recv.getCost() <= currentCost){
-                metaheuristic.variables = recv.getVariables().clone();
-                currentCost = metaheuristic.costOfSolution();
-                nChange++;
-            } 
+            if(recv != null) {	
+	            if(recv.getCost() <= currentCost){
+	                metaheuristic.variables = recv.getVariables().clone();
+	                currentCost = metaheuristic.costOfSolution();
+	                nChange++;
+	            }
+            }
             // TODO: change I've not been able to improve in a while
         }
     }

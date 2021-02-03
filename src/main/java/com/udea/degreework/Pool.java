@@ -19,7 +19,7 @@ public class Pool {
         this.size = size;
         // max. distance accepted in pool (if 0 -> must be not equal) 
         this.distanceThreshold = 0.1;
-        this.tolerance = 1.1;
+        this.tolerance = 1;
     }
 
     public Pool(int size, int id, String policy) {
@@ -29,13 +29,13 @@ public class Pool {
 		pool = new ArrayList<>(size);
 		if (policy.compareTo("Diverse") == 0) {
 			// Must be "very" different but accept bad solutions
-			System.out.println("Pool "+id+" is Diverse");
-			this.distanceThreshold = 0;
-	        this.tolerance = 1.5;
+			System.out.println(this+": Pool "+id+" is Diverse");
+			this.distanceThreshold = 0.5;
+	        this.tolerance = 1.2;
 		}else { 
 			// Accept similar solution but must be very good ones
-			System.out.println("Pool "+id+" is Elite");
-			this.distanceThreshold = 0.5;
+			System.out.println(this+": Pool "+id+" is Elite");
+			this.distanceThreshold = 0.1;
 	        this.tolerance = 1;
 		}
 
@@ -65,7 +65,7 @@ public class Pool {
 		
         if (pool.size() < size){
         	if (isAlreadyInPool(message)){
-        		System.out.println(id+": Already in pool, conf discarded");
+        		//System.out.println(id+": Already in pool, conf discarded");
         		return;
         	}
         		
@@ -79,7 +79,7 @@ public class Pool {
             
         	// 1st condition: better than worst in pool (minimization problem)
         	if (message.cost > worstCostInPool *  tolerance) {
-        		System.out.println(id+": conf is worst than worst cost in pool tolerance = "+tolerance);
+        		//System.out.println(id+": conf is worst than worst cost in pool tolerance = "+tolerance);
         		return;
         	}
         	
@@ -90,7 +90,7 @@ public class Pool {
             for(int i = 0; i < pool.size(); i++){
             	double dis = distance(pool.get(i).variables, message.variables);
             	if(dis <= distanceThreshold) {
-            		System.out.println(id+": conf is discarded because is similar to an existing one. dis = "+dis);
+            		//System.out.println(id+": conf is discarded because is similar to an existing one. dis = "+dis);
             		return;
             	}
                 if(pool.get(i).getCost() == worstCostInPool){
@@ -115,7 +115,13 @@ public class Pool {
     }
 
     public synchronized ContextInformation getInfo(){
-        return pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+    	int size = pool.size();
+    	if (size > 0) {
+    		return pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+    	} else {
+    		System.out.println(id+": getinfo size "+size);
+    		return null;
+    	}
     }
     
     //private Boolean isWorst(ContextInformation message) {
