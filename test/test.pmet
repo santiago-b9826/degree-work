@@ -1,15 +1,15 @@
 Config {
-    size: 72
+    size: 50
     model: QAP
-    target: 66256
+    target: 1840356
     maxTime: 300000
     errorRange: 3
-    updatePoolI: 10000
-    requestPoolI: 20000
+    updatePoolI: 50000
+    requestPoolI: 200000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
-	filePath: /Users/dannymunera/Documents/repos/degree-work/sko72.qap
+	filePath: /Users/dannymunera/Documents/repos/degree-work/Inst50.qap
 }
 
 Execution {
