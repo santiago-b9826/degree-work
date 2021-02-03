@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Worker extends RecursiveAction {    
+	private static final Logger LOGGER = Logger.getLogger( Worker.class.getName() );
+	
     private int requestPoolId;
     private int updatePoolId;
     
@@ -125,7 +129,7 @@ public class Worker extends RecursiveAction {
     	valOrNull = configuration.get("maxRestart");
     	maxRestart = valOrNull == null ? 0 : (int) valOrNull; 
     	
-    	System.out.println(MHType.toString()+"-"+id+": MaxTime "+maxTime+" MaxIters "+maxIters+" MaxRestart "+maxRestart);
+    	LOGGER.log(Level.FINE, MHType.toString()+"-"+id+": MaxTime "+maxTime+" MaxIters "+maxIters+" MaxRestart "+maxRestart);
     	
     	this.kill = kill;
     	target = tCost;
@@ -174,12 +178,12 @@ public class Worker extends RecursiveAction {
     public void compute() {
         int cost;
 
-        System.out.println(MHType.toString()+"-"+id+": Starting solving proces");
+        LOGGER.log(Level.FINE, MHType.toString()+"-"+id+": Starting solving proces");
         initialTime = System.nanoTime();
         cost = solve();
         double exTime = (System.nanoTime() - initialTime)/1e6;
 
-        System.out.println("             Solving process finished Meta type "+ MHType.toString()+"-"+id+". Time: "+exTime+" ms best cost: "+ bestCost);
+        LOGGER.log(Level.FINE,"             Solving process finished Meta type "+ MHType.toString()+"-"+id+". Time: "+exTime+" ms best cost: "+ bestCost);
     }
 
     protected void initVar(int tCost, boolean sLow){
@@ -212,12 +216,12 @@ public class Worker extends RecursiveAction {
     }
 
     public int solve() {
-        System.out.println("WORKER " +MHType+" pasando por solve.");
+    	LOGGER.log(Level.FINE,"WORKER " +MHType+" pasando por solve.");
         initVar(target, strictLow);
         currentCost = metaheuristic.costOfSolution();
         bestConf = metaheuristic.getVariables().clone();
 
-        System.out.println(MHType.toString()+"-"+id+": initial cost= "+ currentCost);
+        LOGGER.log(Level.FINE, MHType.toString()+"-"+id+": initial cost= "+ currentCost);
 
         bestCost = currentCost; //Best solution is the initial solution
 
@@ -258,7 +262,7 @@ public class Worker extends RecursiveAction {
                     //	 + ". mi costo: " + bestCost + ", mis variables: ");
                     //printVector(bestConf);
                     //Logger.debug(()=>{" Time Out"});
-                    System.out.println("Time out!");
+                	LOGGER.log(Level.INFO,MHType.toString()+"-"+id+": Time out!");
                     break;
                 }
             }
@@ -271,12 +275,12 @@ public class Worker extends RecursiveAction {
         }
         //this.heuristicSolver.printPopulation();
         updateTotStats();
-        System.out.println(MHType.toString()+"-"+id+": Saliendo best cost: "+ bestCost+ "  iters: "+ nIterTot + " Changes: "+nChange);
+        LOGGER.log(Level.FINE, MHType.toString()+"-"+id+": solving process has finished best cost: "+ bestCost+ "  iters: "+ nIterTot + " Changes: "+nChange);
         metaheuristic.verify(bestConf);
 
-        for(int i = 0; i < bestConf.length; i++)
+        /*for(int i = 0; i < bestConf.length; i++)
             System.out.print(" "+bestConf[i]);
-        System.out.println(" ");
+        System.out.println(" ");*/
 
         return this.bestCost;
     }
@@ -286,7 +290,7 @@ public class Worker extends RecursiveAction {
         if(currentCost < bestCost){ //(totalCost <= bestCost)
             bestConf = metaheuristic.getVariables().clone();
 
-            //System.out.println("                    "+ MHType.toString() +"-"+id+ ": Current time: " + (System.nanoTime()-initialTime)/1e6 + ". Cost: " + this.currentCost);
+            LOGGER.log(Level.FINER,"                    "+ MHType.toString() +"-"+id+ ": Current time: " + (System.nanoTime()-initialTime)/1e6 + ". Cost: " + this.currentCost);
             //metaheuristic.verify(bestConf);
             bestCost = currentCost;
 
@@ -303,7 +307,6 @@ public class Worker extends RecursiveAction {
                     || (!strictLow && bestCost <= target)){
                 targetSucc = true;
                 kill.set(true);
-                //Console.OUT.println("Soy nodo " + here + " y he encontrado la solucion");
             }
             //Console.OUT.println("La heuristica consigue mejorar el costo. CPLSNode en " + here);
             itersWhitoutImprovements = 0;
@@ -314,7 +317,6 @@ public class Worker extends RecursiveAction {
     }
 
     private void updateTotStats(){
-        //Console.OUT.println("Ingresa a reportar las estadisticas totales");
         nIterTot += nIter;
         nSwapTot += metaheuristic.getNSwap();
         metaheuristic.clearNSwap();
@@ -350,5 +352,9 @@ public class Worker extends RecursiveAction {
             }
             // TODO: change I've not been able to improve in a while
         }
+    }
+    
+    public void clean() {
+    	
     }
 }

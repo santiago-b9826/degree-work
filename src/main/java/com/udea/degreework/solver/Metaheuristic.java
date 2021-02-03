@@ -5,8 +5,12 @@ import com.udea.degreework.model.QAPModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Metaheuristic {
+	private static final Logger LOGGER = Logger.getLogger( Metaheuristic.class.getName() );
+    
     //protected move =new MovePermutation(-1n, -1n);
 
     public enum Type {
@@ -64,10 +68,8 @@ public class Metaheuristic {
         return mySolverType;
     }
 
-    public void configHeuristic(QAPModel problemModel/*, ParamManager opts*/) {
-        System.out.println("MetaH: config problem");
-        this.problemModel = problemModel;
-        System.out.println("In metaH "+this.problemModel);
+    public void configHeuristic(QAPModel problemModel) {
+        this.problemModel = problemModel;    
     }
 
     /**
@@ -121,18 +123,18 @@ public class Metaheuristic {
 
     //Jason: Migration
     public boolean tryInsertIndividual(int[] variables, int size) {
-        System.out.println("BadInvocation of tryInsertIndividual, this its not a GA Heuristic");
+        LOGGER.log(Level.SEVERE, "BadInvocation of tryInsertIndividual, this its not a GA Heuristic");
         return false;
     }
 
     public int getWorstCost() {
-        System.out.println("BadInvocation of getWorstCost, this its not a GA Heuristic");
+    	LOGGER.log(Level.SEVERE, "BadInvocation of getWorstCost, this its not a GA Heuristic");
         return Integer.MAX_VALUE;
     }
 
     //Jason: Migration
     public int[] getConfigForPop(boolean replace) {
-        System.out.println("BadInvocation of getConfigForPop, this is not a GA Heuristic");
+    	LOGGER.log(Level.SEVERE, "BadInvocation of getConfigForPop, this is not a GA Heuristic");
         return null;
     }
 
@@ -151,7 +153,7 @@ public class Metaheuristic {
     }
 
     public void displayInfo(String s) {
-        System.out.println("Error. displayInfo() invokation in HeuristicSolver");
+    	LOGGER.log(Level.SEVERE, "Error. displayInfo() invokation in HeuristicSolver");
     }
 
     public int reset(int n, int totalCost) {
@@ -169,7 +171,7 @@ public class Metaheuristic {
     }
 
     public void initVariables() {
-        System.out.println(mySolverType.toString()+": initilizing model");
+    	LOGGER.log(Level.FINE, mySolverType.toString()+": initilizing model");
         int baseValue = 0;
         for (int i = 0; i < variables.length; i++){
             variables[i] = baseValue + i;

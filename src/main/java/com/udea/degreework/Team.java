@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Team extends RecursiveAction{
+	private static final Logger LOGGER = Logger.getLogger( Team.class.getName() );
+	
 	private List<Worker> workers;
 	private List<Pool> pools;
 	private int id;
@@ -72,8 +76,7 @@ public class Team extends RecursiveAction{
         int targetCost = (int)configuration.get("target");
         boolean strictLow = false;
         int nProc = Runtime.getRuntime().availableProcessors();
-        System.out.println("Número de procesos = " + nProc);
-
+        
         //ExecutorService EXEC = Executors.newCachedThreadPool();
         
         ForkJoinPool myPool = new ForkJoinPool(nProc);
@@ -108,14 +111,25 @@ public class Team extends RecursiveAction{
         bestConf = workers.get(bestWId-(id*100)).getBestConf();
         
         //workers.parallelStream().map(w -> w.solve()).collect(Collectors.toList());
-        System.out.println("Team: all workers in team "+ id +" have finished");
-        System.out.println("Best worker of TEAM "+id+" is  workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
+        LOGGER.log(Level.FINE, "Team: all workers in team "+ id +" have finished");
+        LOGGER.log(Level.FINE,"Best worker of TEAM "+id+" is  workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
 	}
 
 	@Override
 	protected void compute() {
 		// TODO Auto-generated method stub
 		start();
+		
+	}
+	
+	public void clean() {
+		for(Pool p: pools) {
+			p.clean();
+		}
+		for(Worker w: workers) {
+			w.clean();
+			w.reinitialize();
+		}
 		
 	}
 

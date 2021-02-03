@@ -4,14 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.udea.degreework.model.QAPModel;
 
 public class Execution {
+	private static final Logger LOGGER = Logger.getLogger( Execution.class.getName() );
 	private List<Team> teams = new ArrayList<Team>();
 	private Map<String, Object> config = new HashMap<String, Object>();
 	private int[] bestConf;
+	private int sampleSize;
+	private double sumTimes;
+	private int sumCosts;
 
 	public Execution(List<Team> teams) {
 		this.teams = teams;
@@ -23,48 +30,80 @@ public class Execution {
 	}
 
 	public void start() {
+		
         QAPModel model = new QAPModel((int)config.get("size"));
         model.loadData(String.valueOf(config.get("filePath")));
         AtomicBoolean kill = new AtomicBoolean(false);
+        Object valOrNull = config.get("sampleSize");
+    	sampleSize = valOrNull == null ? 1 : (int) valOrNull;
 		
-        double initialTime = System.nanoTime();
+    	LOGGER.log(Level.INFO, "Solving QAP instance "+sampleSize+" times");
+    	
+    	int nProc = Runtime.getRuntime().availableProcessors();
+    	ForkJoinPool myPool = new ForkJoinPool(nProc);
+
+    	System.out.println("|-----|----|-----|-----|---------|------------|");
+    	System.out.println("|Rep. | MH | TID | WID | Time(s) |    Cost    | sol");
+    	System.out.println("|-----|----|-----|-----|---------|------------|");
+
+    	sumTimes = 0;
+    	sumCosts = 0;
+    	
+    	for(int rep = 0; rep < sampleSize; rep++) {
+    		
+    	
+    		double initialTime = System.nanoTime();
         
-        for (int i = 0; i < teams.size(); i++) {
-        	teams.get(i).setTeam(i+1, model, config, kill);
-			teams.get(i).fork();
-		}
+    		for (int i = 0; i < teams.size(); i++) {
+    			teams.get(i).setTeam(i+1, model, config, kill);
+    			myPool.submit(teams.get(i));
+    		    //teams.get(i).fork();
+    		}
         
-        for (int i = 0; i < teams.size(); i++) {
-        	teams.get(i).join();
-		}
+    		for (int i = 0; i < teams.size(); i++) {
+    			teams.get(i).join();
+    		}
         
-        int bestCost = Integer.MAX_VALUE;
-        int bestWId = -1;
-        int bestTId = -1;
-        String bestMeta="";
+    		int bestCost = Integer.MAX_VALUE;
+    		int bestWId = -1;
+    		int bestTId = -1;
+    		String bestMeta="";
         
-        for (int i = 0; i < teams.size(); i++)  {
-        	if(teams.get(i).getBestCost() < bestCost) {
-        		bestCost = teams.get(i).getBestCost();
-        		bestWId = teams.get(i).getBestWId();
-        		bestTId = teams.get(i).getId();
-        		bestMeta = teams.get(i).getBestMeta();
-        	}
-        }
+    		for (int i = 0; i < teams.size(); i++)  {
+    			if(teams.get(i).getBestCost() < bestCost) {
+    				bestCost = teams.get(i).getBestCost();
+    				bestWId = teams.get(i).getBestWId();
+    				bestTId = teams.get(i).getId();
+    				bestMeta = teams.get(i).getBestMeta();
+    			}
+    		}
         
-        bestConf = teams.get(bestTId-1).getBestConf();
-        
-        for(int i = 0; i < bestConf.length; i++) {
-        	System.out.print(" "+bestConf[i]);
-        }
-        
-        double endTime = System.nanoTime();
-        
-        System.out.print("");
-        model.verify(bestConf.length, bestConf);
-        System.out.println("\nExecution: all teams have finished");
-        System.out.println("Best worker of whole execution is TeamID: "+ bestTId+" workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
-        System.out.println("Execution time: "+(endTime-initialTime)/1e6+" ms");
+    		bestConf = teams.get(bestTId-1).getBestConf();
+              
+    		double endTime = System.nanoTime();
+    		double time = (endTime-initialTime)/1e9;
+    		sumTimes += time;
+    		sumCosts += bestCost;
+    		
+    		System.out.format("| %3d |%4s| %3s | %3s |%9.4f| %10d |" , rep, bestMeta, bestTId, bestWId, time, bestCost);
+    		
+    		for(int i = 0; i < bestConf.length; i++) {
+    			System.out.print(" "+bestConf[i]);
+    		}
+    		System.out.println("");
+    		
+    		model.verify(bestConf.length, bestConf);
+    		LOGGER.log(Level.INFO,"\nExecution "+rep+": all teams have finished");
+    		LOGGER.log(Level.INFO,"Best worker of whole execution is TeamID: "+ bestTId+" workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
+    		LOGGER.log(Level.INFO,"Execution time: "+time+" ms");
+    		for (int i = 0; i < teams.size(); i++)  {
+    			teams.get(i).clean();
+    			teams.get(i).reinitialize();
+    		}
+    		kill.set(false);
+    	}
+    	System.out.println("|-----|----|-----|-----|---------|------------|");
+    	System.out.format( "| AVG |    |     |     |%9.4f| %10.1f |\n" ,  sumTimes/sampleSize, sumCosts/(double)sampleSize);
 	}
 
 	private void validateData() {
@@ -98,6 +137,7 @@ public class Execution {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.toString(), e);
 			System.exit(1);
 		}
 	}

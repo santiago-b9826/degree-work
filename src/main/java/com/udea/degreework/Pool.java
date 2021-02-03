@@ -3,9 +3,11 @@ package com.udea.degreework;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pool {
-
+	private static final Logger LOGGER = Logger.getLogger( Pool.class.getName() );
     private int size;
     private int id;
     private String policy;
@@ -29,12 +31,12 @@ public class Pool {
 		pool = new ArrayList<>(size);
 		if (policy.compareTo("Diverse") == 0) {
 			// Must be "very" different but accept bad solutions
-			System.out.println(this+": Pool "+id+" is Diverse");
+			LOGGER.log(Level.INFO, "Pool "+id+" is Diverse");
 			this.distanceThreshold = 0.5;
 	        this.tolerance = 1.2;
 		}else { 
 			// Accept similar solution but must be very good ones
-			System.out.println(this+": Pool "+id+" is Elite");
+			LOGGER.log(Level.INFO, "Pool "+id+" is Elite");
 			this.distanceThreshold = 0.1;
 	        this.tolerance = 1;
 		}
@@ -149,5 +151,10 @@ public class Pool {
     	}
     	dis = (conf1.length - same)/(double)conf1.length;
     	return dis;
+    }
+    
+    public void clean() {
+    	pool.clear();
+    	worstCostInPool = -1;
     }
 }

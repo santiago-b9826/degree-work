@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.udea.degreework.Team;
+
 public class QAPModel {
+	
+	private static final Logger LOGGER = Logger.getLogger( QAPModel.class.getName() );
     private int[][] flow;
     private int[][] dist;
     private int[][] delta;
@@ -14,15 +19,12 @@ public class QAPModel {
     private int bound = 0;  /** best bound (0 if unknown) */
     private int bks = 0;    /** best known solution cost (0 if unknown) */
     private int size;
-    private Logger logger;
     private int baseValue;
     private Random random;
     //protected String inPathVectorSol;
 
     public QAPModel(int size){
         this.size = size;
-        logger = Logger.getLogger(QAPModel.class.getName());
-        //System.out.println("Constructor de QAPModel invocado");
         random = new Random();
         flow = new int[size][size];
         dist = new int[size][size];
@@ -32,8 +34,6 @@ public class QAPModel {
 
     public QAPModel(QAPModel model){
         size = model.getSize();
-        logger = Logger.getLogger(QAPModel.class.getName());
-        //System.out.println("Constructor de QAPModel invocado");
         random = new Random();
         flow = model.flow;
         dist = model.dist;
@@ -186,7 +186,7 @@ public class QAPModel {
     public boolean loadData(String filePath){
         File filep = new File(filePath);
         if (filep.isDirectory()) return false;
-        System.out.println("\n--   Solving "+filePath+" ");
+        LOGGER.log(Level.INFO,"\n--   Solving "+filePath+" ");
         //Load first line with headers size p1 p2
         Scanner fr = null;
         try {
@@ -206,7 +206,7 @@ public class QAPModel {
         }else{
             bound = opt;
         }
-        logger.info("file: "+filePath+" size: "+sizeF+" bound: "+bound+" opt: "+opt+" bks: "+bks);
+        LOGGER.log(Level.INFO, "file: "+filePath+" size: "+sizeF+" bound: "+bound+" opt: "+opt+" bks: "+bks);
 
         //Load Problem
         readMatrix(fr, sizeF);
@@ -313,7 +313,7 @@ public class QAPModel {
         for (int value : match) {
             permutV[value - baseV]++;
             if (permutV[value - baseV] > 1) {
-                System.out.println("Not valid permutation, value " + value + " is repeted");
+                LOGGER.log(Level.SEVERE,"Not valid permutation, value " + value + " is repeted");
             }
         }
         int r  = 0;
@@ -322,7 +322,7 @@ public class QAPModel {
                 r += this.flow[i][j] * this.dist[match[i]][match[j]];
             }
         }
-        System.out.println("Verified Cost: "+ r);
+        LOGGER.log(Level.INFO, "Verified Cost: "+ r);
         return (r == 0);
     }
 
