@@ -1,15 +1,15 @@
 Config {
-    size: 40
+    size: 20
     model: QAP
-    target: 3139370
-    maxTime: 120000
+    target: 703482
+    maxTime: 30000
     errorRange: 3
     updatePoolI: 50000
     requestPoolI: 200000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
-	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
+	filePath: /Users/dannymunera/Documents/repos/degree-work/tai20a.qap
 	sampleSize: 10
 }
 

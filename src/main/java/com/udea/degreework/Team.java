@@ -23,26 +23,19 @@ public class Team extends RecursiveAction{
 	
 	private AtomicBoolean kill;
 	
-	private int[] bestConf;
-    private int bestWId = -1;
-    private String bestMeta="";
+	private SolverStats bestWorkerStats;
+    
 	
+	public SolverStats getBestWorkerStats() {
+		return bestWorkerStats;
+	}
+
+
 	public int getBestCost() {
 		return bestCost;
 	}
 
-	public int[] getBestConf() {
-		return bestConf;
-	}
-
-	public int getBestWId() {
-		return bestWId;
-	}
-
-	public String getBestMeta() {
-		return bestMeta;
-	}
-	
+		
 	public int getId() {
 		return id;
 	}
@@ -72,8 +65,7 @@ public class Team extends RecursiveAction{
 	}
 	
 	public void start() {
-		this.bestConf = new int[myModel.getSize()];
-        int targetCost = (int)configuration.get("target");
+		int targetCost = (int)configuration.get("target");
         boolean strictLow = false;
         int nProc = Runtime.getRuntime().availableProcessors();
         
@@ -94,25 +86,24 @@ public class Team extends RecursiveAction{
         }
 
         bestCost = Integer.MAX_VALUE;
-        bestWId = -1;
-        bestMeta="";
+        int bestIndex = -1;
         
+        // Search best worker in team
         for (int i = 0; i < workers.size(); i++)  {
         	if(workers.get(i).getBestCost() < bestCost) {
         		bestCost = workers.get(i).getBestCost();
-        		bestWId = workers.get(i).getId();
-        		bestMeta = workers.get(i).getMHType().toString();
+        		bestIndex = i;
         	}
         }
-        
-        //bestConf = new int[myModel.getSize()];
-        //bestConf = workers.get(bestWId).getBestConf().clone(); 
-        
-        bestConf = workers.get(bestWId-(id*100)).getBestConf();
-        
+        bestWorkerStats = workers.get(bestIndex).getSolverStats();  
+        bestWorkerStats.setWId(id);
+                
         //workers.parallelStream().map(w -> w.solve()).collect(Collectors.toList());
         LOGGER.log(Level.FINE, "Team: all workers in team "+ id +" have finished");
-        LOGGER.log(Level.FINE,"Best worker of TEAM "+id+" is  workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
+        LOGGER.log(Level.FINE,
+        		"Best worker of TEAM "+id+" is  workerID: "+bestWorkerStats.getWId()
+        		+"-"+bestWorkerStats.getMhtype() +" BestCost: "	
+        				+bestWorkerStats.getBestCost());
 	}
 
 	@Override
@@ -123,6 +114,7 @@ public class Team extends RecursiveAction{
 	}
 	
 	public void clean() {
+		bestWorkerStats = null;
 		for(Pool p: pools) {
 			p.clean();
 		}

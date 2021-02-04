@@ -357,4 +357,8 @@ public class Worker extends RecursiveAction {
     public void clean() {
     	
     }
+    
+    public SolverStats getSolverStats() {
+    	return new SolverStats(nIterTot, nChange, bestCost, bestConf, MHType, id, target);
+    }
 }

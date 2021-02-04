@@ -1,5 +1,8 @@
 package com.udea.degreework;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,10 +18,15 @@ public class Execution {
 	private static final Logger LOGGER = Logger.getLogger( Execution.class.getName() );
 	private List<Team> teams = new ArrayList<Team>();
 	private Map<String, Object> config = new HashMap<String, Object>();
-	private int[] bestConf;
 	private int sampleSize;
 	private double sumTimes;
-	private int sumCosts;
+	private long sumCosts;
+	private long sumIters;
+	private long sumChanges;
+	private int sumTargets;
+	private SolverStats bestWorker;
+	private File outFile;
+	FileWriter csvWriter; 
 
 	public Execution(List<Team> teams) {
 		this.teams = teams;
@@ -41,13 +49,25 @@ public class Execution {
     	
     	int nProc = Runtime.getRuntime().availableProcessors();
     	ForkJoinPool myPool = new ForkJoinPool(nProc);
+    	
+    	
+    	boolean createFile = config.get("outFile") != null;
+    	if(createFile) {
+    		try {
+				csvWriter = new FileWriter((String) config.get("outFile"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+    	printHeader(createFile);
 
-    	System.out.println("|-----|----|-----|-----|---------|------------|");
-    	System.out.println("|Rep. | MH | TID | WID | Time(s) |    Cost    | sol");
-    	System.out.println("|-----|----|-----|-----|---------|------------|");
-
-    	sumTimes = 0;
-    	sumCosts = 0;
+    	sumTimes = 0.0;
+    	sumCosts = 0l;
+    	sumIters = 0l;
+    	sumChanges = 0l;
+    	sumTargets = 0;
     	
     	for(int rep = 0; rep < sampleSize; rep++) {
     		
@@ -65,36 +85,33 @@ public class Execution {
     		}
         
     		int bestCost = Integer.MAX_VALUE;
-    		int bestWId = -1;
-    		int bestTId = -1;
-    		String bestMeta="";
-        
+    		int bestTIndex = -1;
+    		
     		for (int i = 0; i < teams.size(); i++)  {
     			if(teams.get(i).getBestCost() < bestCost) {
     				bestCost = teams.get(i).getBestCost();
-    				bestWId = teams.get(i).getBestWId();
-    				bestTId = teams.get(i).getId();
-    				bestMeta = teams.get(i).getBestMeta();
+    				bestTIndex = i;
     			}
     		}
+    		
+    		bestWorker = teams.get(bestTIndex).getBestWorkerStats();
         
-    		bestConf = teams.get(bestTId-1).getBestConf();
-              
     		double endTime = System.nanoTime();
     		double time = (endTime-initialTime)/1e9;
     		sumTimes += time;
     		sumCosts += bestCost;
+    		sumIters += bestWorker.getTotalIters();
+    		sumChanges += bestWorker.getTotalChanges();
+    		sumTargets += bestWorker.hitTarget()?1:0;
     		
-    		System.out.format("| %3d |%4s| %3s | %3s |%9.4f| %10d |" , rep, bestMeta, bestTId, bestWId, time, bestCost);
+    		printStats(rep, bestWorker, time, createFile);
     		
-    		for(int i = 0; i < bestConf.length; i++) {
-    			System.out.print(" "+bestConf[i]);
-    		}
-    		System.out.println("");
+    		printSolution(createFile);
     		
-    		model.verify(bestConf.length, bestConf);
+    		model.verify(bestWorker.getBestConf().length, bestWorker.getBestConf());
     		LOGGER.log(Level.INFO,"\nExecution "+rep+": all teams have finished");
-    		LOGGER.log(Level.INFO,"Best worker of whole execution is TeamID: "+ bestTId+" workerID: "+bestWId+"-"+bestMeta+" BestCost: "+bestCost);
+    		LOGGER.log(Level.INFO,"Best worker of whole execution is TeamID: "+ bestWorker.getTId()+" workerID: " 
+    		+ bestWorker.getWId()+"-"+bestWorker.getMhtype()+" BestCost: "+bestWorker.getBestCost());
     		LOGGER.log(Level.INFO,"Execution time: "+time+" ms");
     		for (int i = 0; i < teams.size(); i++)  {
     			teams.get(i).clean();
@@ -102,8 +119,17 @@ public class Execution {
     		}
     		kill.set(false);
     	}
-    	System.out.println("|-----|----|-----|-----|---------|------------|");
-    	System.out.format( "| AVG |    |     |     |%9.4f| %10.1f |\n" ,  sumTimes/sampleSize, sumCosts/(double)sampleSize);
+    	printAVGs(bestWorker.getTarget(), createFile);
+    	if (createFile) {
+    		try {
+				csvWriter.flush();
+				csvWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}
 	}
 
 	private void validateData() {
@@ -139,6 +165,83 @@ public class Execution {
 			e.printStackTrace();
 			LOGGER.log(Level.SEVERE, e.toString(), e);
 			System.exit(1);
+		}
+	}
+	
+	private void printHeader(boolean createFile){
+		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
+		System.out.println("|  # |  MH  | TID | WID | Time(s) |  iters  |    Cost    | Tg |  APD  | nCh | sol");
+		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
+		if (createFile) {
+			try {
+				csvWriter.append("0-Repetition, 1-MHType, 2-TeamID, 3-WorkerID, 4-Time, 5-iters, 6-Cost, 7-HitTarget, 8-APD, 9-nChanges, 10-Solution\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	private void printStats(int rep, SolverStats st, double time, boolean createFile) {
+		System.out.format( "| %2d | %4s | %3s | %3s | %7.3f | %7d | %10d | %2d | %5.2f | %3d |" , 
+				rep, st.getMhtype(), st.getTId(), st.getWId(), time, st.getTotalIters(),
+				st.getBestCost(), st.hitTarget()?1:0, st.getPD(), st.getTotalChanges());
+		if (createFile) {
+			String hit = st.hitTarget() ? "1":"0"; 
+			try {
+				csvWriter.append(rep+","+st.getMhtype().toString()+","+st.getTId()+
+						","+st.getWId()+","+time+","+st.getTotalIters()+","+
+						st.getBestCost()+","+ hit+","+ st.getPD()+","+ st.getTotalChanges()
+						+", ");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void printSolution(boolean createFile) {
+		for(int i = 0; i < bestWorker.getBestConf().length; i++) {
+			System.out.print(" "+bestWorker.getBestConf()[i]);
+			if(createFile) {
+				try {
+					csvWriter.append(bestWorker.getBestConf()[i]+" ");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println("");
+		if(createFile) {
+			try {
+				csvWriter.append("\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void printAVGs(int target, boolean createFile) {
+		double avgTime = sumTimes/sampleSize;
+		double avgIters = sumIters/(double)sampleSize;
+		double avgCost = sumCosts/(double)sampleSize;
+		double apd = ((avgCost - (double)target) / target) * 100.0;
+		double avgChanges = sumChanges /(double)sampleSize;
+		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
+    	System.out.format( "|AVGs|      |     |     |%9.4f|%9.1f| %10.1f | %2d | %5.2f | %3.1f |\n" , 
+    			avgTime, avgIters, avgCost, sumTargets, apd, avgChanges);
+    	
+    	if (createFile) {
+			try {
+				csvWriter.append("AVG, , , ,"+avgTime+","+avgIters+","+avgCost+","
+								+sumTargets+","+apd+","+avgChanges+",");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }
