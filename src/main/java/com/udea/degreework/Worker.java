@@ -12,6 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Worker extends RecursiveAction {    
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = Logger.getLogger( Worker.class.getName() );
 	
     private int requestPoolId;
@@ -117,7 +122,7 @@ public class Worker extends RecursiveAction {
         setSize((int)configuration.get("size"));
         
         metaheuristic =  Metaheuristic.make(MHType, size);
-        metaheuristic.configHeuristic(model);
+        metaheuristic.configHeuristic(model, configuration);
     	bestConf = new int[size];
     	
     	Object valOrNull = configuration.get("maxTime");

@@ -3,11 +3,15 @@ package com.udea.degreework.solver;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RoTSearch extends Metaheuristic{
 
-    private double tabuDurationFactorUS;
+	private static final Logger LOGGER = Logger.getLogger( RoTSearch.class.getName() );
+	private double tabuDurationFactorUS;
     private double aspirationFactorUS;
     private double tabuDurationFactor;
     private double aspirationFactor;
@@ -22,8 +26,8 @@ public class RoTSearch extends Metaheuristic{
     private int[][] tabuList;
 
     //tdl = 0.9;
-    private double tdl = 0.8;
-    private double tdu = 1.2;
+    //private double tdl = 0.8;
+    //private double tdu = 1.2;
 
     private double al = 2.0;
     private double au = 5.0;
@@ -33,15 +37,19 @@ public class RoTSearch extends Metaheuristic{
         mySolverType = Type.ROT;
     }
 
-    public void configHeuristic(QAPModel problemModel){
-        super.configHeuristic(problemModel/*, opts*/);
+    public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration){
+        super.configHeuristic(problemModel, configuration);
         tabuList = new int[problemModel.getSize()][problemModel.getSize()];
-        tabuDurationFactorUS = -1; //opts("-RoTS_t", -1.0);
-        aspirationFactorUS = -1; //opts("-RoTS_a", -1.0);
+        
+        
+        Object valOrNull = configuration.get("RoTS.tabuDurationFactor");
+        tabuDurationFactorUS = valOrNull == null ? -1 : (double) valOrNull;
+        valOrNull = configuration.get("RoTS.aspirationFactor");
+        aspirationFactorUS = valOrNull == null ? -1 : (double) valOrNull;
     }
 
-    private int tabuDurationLower;
-    private int tabuDurationUpper;
+    //private int tabuDurationLower;
+    //private int tabuDurationUpper;
 
     /**
      *  Initialize variables of the solver
@@ -59,21 +67,19 @@ public class RoTSearch extends Metaheuristic{
         }
         //Console.OUT.println("this.tabuDurationFactor: " + this.tabuDurationFactor);
         tabuDuration = (int)(tabuDurationFactor * problemModel.getSize());
-        //Console.OUT.println("this.tabuDuration: " + this.tabuDuration);
+        LOGGER.log(Level.INFO, "tabuDuration Factor: "+tabuDurationFactor+" tabuDuration: " + tabuDuration);
+        
         if (aspirationFactorUS == -1.0)
             aspirationFactor = al + (au - al) * ThreadLocalRandom.current().nextDouble();
         else
             aspirationFactor = aspirationFactorUS;
-        //Console.OUT.println("this.aspirationFactor: " + this.aspirationFactor);
+        LOGGER.log(Level.INFO, "aspirationFactor: " + this.aspirationFactor);
 
         aspiration = (int) (aspirationFactor * problemModel.getSize() * problemModel.getSize());
-        //Console.OUT.println("this.aspiration: " + this.aspiration + "\n" + "Matriz tabulist: ");
         for (int i = 0 ; i < problemModel.getSize(); i++){
             for (int j = 0 ; j < problemModel.getSize(); j++){
                 this.tabuList[i][j] = -(problemModel.getSize() * i + j);
-                //Console.OUT.print(this.tabuList(i,j) + " ");
             }
-            //Console.OUT.println("\n");
         }
     }
 

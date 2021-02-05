@@ -11,6 +11,7 @@ Config {
     equalNumberOfWorkersPerTeam: true
 	filePath: /Users/dannymunera/Documents/repos/degree-work/tai20a.qap
 	sampleSize: 10
+	outFile: tai20a.csv
 }
 
 Execution {

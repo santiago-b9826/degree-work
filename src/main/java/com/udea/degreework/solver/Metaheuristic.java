@@ -68,7 +68,7 @@ public class Metaheuristic {
         return mySolverType;
     }
 
-    public void configHeuristic(QAPModel problemModel) {
+    public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration) {
         this.problemModel = problemModel;    
     }
 

@@ -5,10 +5,14 @@ import com.udea.degreework.model.QAPModel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EOSearch extends Metaheuristic{
+	
+	private static final Logger LOGGER = Logger.getLogger( EOSearch.class.getName() );
+	
 
     private double[] pdf;
     private int[] fit;
@@ -80,17 +84,19 @@ public class EOSearch extends Metaheuristic{
         setMySolverType(Type.EO);
     }
 
-    public void configHeuristic(QAPModel problemModel/*, ParamManager opts*/){
-        super.configHeuristic(problemModel);
+    public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration){
+        super.configHeuristic(problemModel, configuration);
         pdf = new double[problemModel.getSize() + 1];// +1 since x in 1..size
         fit = new int[problemModel.getSize()];
         expDown = 6.385378048 * Math.pow(problemModel.getSize(), -1.033400799);
         expUp = 8.867754442 * Math.pow(problemModel.getSize(), -0.895936426);
         powDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
         powUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
-        //Jason: Se cambia la forma como estan siendo leidos los parametros.
-        tauUserSel =  1.0 + 1.0 / Math.log(problemModel.getSize());//opts("-EO_t", (1.0 + 1.0 / Math.log(problemModel.getSize())));
-        pdfUserSel = -1; //opts("-EO_p", -1);
+        
+        Object valOrNull = configuration.get("EO.tau");
+        tauUserSel = valOrNull == null ? (1.0 + 1.0 / Math.log(problemModel.getSize())) : (double) valOrNull;
+        valOrNull = configuration.get("EO.pdf");
+        pdfUserSel = valOrNull == null ? -1 : (int) valOrNull;
         selSecond = 1; //opts("-EO_ss", 1);
     }
 
@@ -122,6 +128,10 @@ public class EOSearch extends Metaheuristic{
         }else {
             tau = tauUserSel;
         }
+        
+        
+        LOGGER.log(Level.INFO, "pdf: "+pdfS.toString()+" tau: "+tau);
+        
         initPDF(pdfS);
     }
 
@@ -211,7 +221,7 @@ public class EOSearch extends Metaheuristic{
         // for (v in fit)
         //   Console.OUT.printf("%d %d \n",(v & 0xFFF),(v >>12));
         int index = pdfPick();
-        int sVar = fit[index] & 0x3FF;
+        //int sVar = fit[index] & 0x3FF;
         int sCost = fit[index] >> 10;
         //Console.OUT.printf("svar %d scost %d \n",sVar,sCost);
         int nSameFit = 0;
@@ -268,7 +278,7 @@ public class EOSearch extends Metaheuristic{
     private void onLocMin(){
         // communicate Local Minimum
         // solver.communicateLM( this.currentCost, cop.getVariables() as Valuation(sz));
-        int[] solverState = this.createSolverState();
+        //int[] solverState = this.createSolverState();
         //this.solver.communicateLM( new State(sz, this.currentCost, problemModel.getVariables() as Valuation(sz), here.id as Int, solverState) );
     }
 
@@ -278,13 +288,13 @@ public class EOSearch extends Metaheuristic{
      *  oeState(1) = EO pdf type
      *  oeState(2) = EO "tau" value
      */
-    private int[] createSolverState() {
+    /*private int[] createSolverState() {
         int[] eoState = new int[3];
         eoState[0] = getMySolverType().getValue();
         eoState[1] = pdfS.getValue();
         eoState[2] = (int)(tau * 1000.0); // TODO: convert double to Int??? levels ranges ???
         return eoState;
-    }
+    }*/
 
     /**
      *  Process Solver State Array received from Pool

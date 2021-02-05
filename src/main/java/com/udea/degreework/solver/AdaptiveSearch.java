@@ -3,6 +3,7 @@ package com.udea.degreework.solver;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AdaptiveSearch extends Metaheuristic{
@@ -40,14 +41,17 @@ public class AdaptiveSearch extends Metaheuristic{
         mySolverType = Type.AS;
     }
 
-    public void configHeuristic(QAPModel problemModel){
-        super.configHeuristic(problemModel);
+    public void configHeuristic(QAPModel problemModel, Map<String, Object> configuration){
+        super.configHeuristic(problemModel, configuration);
         mark = new int[problemModel.getSize()];
         listIJ = new MovePermutation[problemModel.getSize()];
         listI = new int[problemModel.getSize()];
         nVarToReset = -1; //opts("--AS_varToReset",-1);
-        resetPercent = 10; //opts("--AS_resetPer",10n);
-        freezeLocMin = 5; //opts("--AS_freezeLocMin",5n);
+        
+        Object valOrNull = configuration.get("AS.resetPercent");
+        this.resetPercent = valOrNull == null ? 10 : (int) valOrNull;
+        valOrNull = configuration.get("AS.freezeLocMin");
+        this.freezeLocMin = valOrNull == null ? 5 : (int) valOrNull; 
         freezeSwap = 5; //opts("--AS_freezeSwap",5n);
         resetLimit = 5; //opts("--AS_resetLimit",5n);
         probSelectLocMin = 60; //opts("--AS_probSelecLocMin", 0n);

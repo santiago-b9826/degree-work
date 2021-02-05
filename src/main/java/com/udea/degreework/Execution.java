@@ -1,6 +1,5 @@
 package com.udea.degreework;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +24,8 @@ public class Execution {
 	private long sumChanges;
 	private int sumTargets;
 	private SolverStats bestWorker;
-	private File outFile;
-	FileWriter csvWriter; 
+	private FileWriter csvWriter; 
+	private String instName;
 
 	public Execution(List<Team> teams) {
 		this.teams = teams;
@@ -40,12 +39,15 @@ public class Execution {
 	public void start() {
 		
         QAPModel model = new QAPModel((int)config.get("size"));
-        model.loadData(String.valueOf(config.get("filePath")));
+        String filePath = (String) config.get("filePath"); 
+        instName = filePath.split(".+?/(?=[^/]+$)")[1].split("\\.(?=[^\\.]+$)")[0];
+        
+        model.loadData(String.valueOf(filePath));
         AtomicBoolean kill = new AtomicBoolean(false);
         Object valOrNull = config.get("sampleSize");
     	sampleSize = valOrNull == null ? 1 : (int) valOrNull;
 		
-    	LOGGER.log(Level.INFO, "Solving QAP instance "+sampleSize+" times");
+    	LOGGER.log(Level.INFO, "Solving QAP instance "+instName+", "+sampleSize+" times");
     	
     	int nProc = Runtime.getRuntime().availableProcessors();
     	ForkJoinPool myPool = new ForkJoinPool(nProc);
@@ -235,7 +237,7 @@ public class Execution {
     	
     	if (createFile) {
 			try {
-				csvWriter.append("AVG, , , ,"+avgTime+","+avgIters+","+avgCost+","
+				csvWriter.append(instName+", , , ,"+avgTime+","+avgIters+","+avgCost+","
 								+sumTargets+","+apd+","+avgChanges+",");
 				
 			} catch (IOException e) {

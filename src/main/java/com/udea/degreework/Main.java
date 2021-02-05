@@ -1,6 +1,5 @@
 
 package com.udea.degreework;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -19,9 +18,9 @@ public class Main {
 		String program = args.length > 1 ? args[1] : "test/test." + EXTENSION;
 		
 		// set logger level 
-		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.OFF));
+		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.INFO));
 		
-		System.out.println("Interpreting file " + program);
+		LOGGER.log(Level.INFO,"Interpreting file " + program);
 		
 		DSLParallelMetaheuristicLexer lexer = new DSLParallelMetaheuristicLexer(new ANTLRFileStream(program));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -32,7 +31,7 @@ public class Main {
 		DSLParallelMetaheuristicCustomVisitor visitor = new DSLParallelMetaheuristicCustomVisitor();
 		visitor.visit(tree);
 
-		System.out.println("Interpretation finished");
+		LOGGER.log(Level.INFO,"Interpretation finished");
 
 	}
 
