@@ -1,17 +1,22 @@
 Config {
-    size: 20
+    size: 40
     model: QAP
-    target: 703482
-    maxTime: 30000
+    target: 3139370
+    maxTime: 5000
     errorRange: 3
-    updatePoolI: 50000
-    requestPoolI: 200000
+    updatePoolI: 40000
+    requestPoolI: 80000
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
-	filePath: /Users/dannymunera/Documents/repos/degree-work/tai20a.qap
+	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
 	sampleSize: 10
 	outFile: tai20a.csv
+	EO.pdf: -1
+	EO.tau: -1.0
+	RoTS.tabuDurationFactor: -1.0
+	RoTS.aspirationFactor: -1.0
+	
 }
 
 Execution {

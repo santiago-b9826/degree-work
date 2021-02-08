@@ -26,8 +26,8 @@ public class RoTSearch extends Metaheuristic{
     private int[][] tabuList;
 
     //tdl = 0.9;
-    //private double tdl = 0.8;
-    //private double tdu = 1.2;
+    private double tdl = 0.2;
+    private double tdu = 1.8;
 
     private double al = 2.0;
     private double au = 5.0;
@@ -43,9 +43,9 @@ public class RoTSearch extends Metaheuristic{
         
         
         Object valOrNull = configuration.get("RoTS.tabuDurationFactor");
-        tabuDurationFactorUS = valOrNull == null ? -1 : (double) valOrNull;
+        tabuDurationFactorUS = valOrNull == null ? 8 : Double.parseDouble((String) valOrNull);
         valOrNull = configuration.get("RoTS.aspirationFactor");
-        aspirationFactorUS = valOrNull == null ? -1 : (double) valOrNull;
+        aspirationFactorUS = valOrNull == null ? 5 : Double.parseDouble((String) valOrNull);
     }
 
     //private int tabuDurationLower;
@@ -61,7 +61,8 @@ public class RoTSearch extends Metaheuristic{
             Arrays.fill(tabuList[x], 0);
         }
         if (tabuDurationFactorUS < 0){
-            tabuDurationFactor = -tabuDurationFactorUS;
+            //tabuDurationFactor = -tabuDurationFactorUS;
+            tabuDurationFactor  = tdl + (tdu - tdl) * ThreadLocalRandom.current().nextDouble();
         } else {
             tabuDurationFactor = tabuDurationFactorUS;
         }

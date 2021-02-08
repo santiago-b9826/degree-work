@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.udea.degreework.model.QAPModel;
+import com.udea.degreework.solver.Metaheuristic;
 
 public class Execution {
 	private static final Logger LOGGER = Logger.getLogger( Execution.class.getName() );
@@ -23,9 +24,14 @@ public class Execution {
 	private long sumIters;
 	private long sumChanges;
 	private int sumTargets;
+	private int sumRots;
+	private int sumEO;
+	private int sumAS;
+	
 	private SolverStats bestWorker;
 	private FileWriter csvWriter; 
 	private String instName;
+	
 
 	public Execution(List<Team> teams) {
 		this.teams = teams;
@@ -70,6 +76,9 @@ public class Execution {
     	sumIters = 0l;
     	sumChanges = 0l;
     	sumTargets = 0;
+    	sumRots = 0;
+    	sumEO = 0;
+    	sumAS = 0;
     	
     	for(int rep = 0; rep < sampleSize; rep++) {
     		
@@ -105,6 +114,18 @@ public class Execution {
     		sumIters += bestWorker.getTotalIters();
     		sumChanges += bestWorker.getTotalChanges();
     		sumTargets += bestWorker.hitTarget()?1:0;
+    		switch (bestWorker.getMhtype()) {
+			case AS:
+				sumAS++;				
+				break;
+			case EO:
+				sumEO++;
+				break;
+			case ROT:
+				sumRots++;
+			default:
+				break;
+			}
     		
     		printStats(rep, bestWorker, time, createFile);
     		
@@ -171,9 +192,9 @@ public class Execution {
 	}
 	
 	private void printHeader(boolean createFile){
-		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
-		System.out.println("|  # |  MH  | TID | WID | Time(s) |  iters  |    Cost    | Tg |  APD  | nCh | sol");
-		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
+		System.out.println("|----|--------|-----|-----|---------|---------|------------|----|-------|-----|");
+		System.out.println("|  # |RT-AS-EO| TID | WID | Time(s) |  iters  |    Cost    | Tg |  APD  | nCh | sol");
+		System.out.println("|----|--------|-----|-----|---------|---------|------------|----|-------|-----|");
 		if (createFile) {
 			try {
 				csvWriter.append("0-Repetition, 1-MHType, 2-TeamID, 3-WorkerID, 4-Time, 5-iters, 6-Cost, 7-HitTarget, 8-APD, 9-nChanges, 10-Solution\n");
@@ -184,7 +205,7 @@ public class Execution {
 		}
 	}
 	private void printStats(int rep, SolverStats st, double time, boolean createFile) {
-		System.out.format( "| %2d | %4s | %3s | %3s | %7.3f | %7d | %10d | %2d | %5.2f | %3d |" , 
+		System.out.format( "| %2d |  %4s  | %3s | %3s | %7.3f | %7d | %10d | %2d | %5.2f | %3d |" , 
 				rep, st.getMhtype(), st.getTId(), st.getWId(), time, st.getTotalIters(),
 				st.getBestCost(), st.hitTarget()?1:0, st.getPD(), st.getTotalChanges());
 		if (createFile) {
@@ -231,13 +252,13 @@ public class Execution {
 		double avgCost = sumCosts/(double)sampleSize;
 		double apd = ((avgCost - (double)target) / target) * 100.0;
 		double avgChanges = sumChanges /(double)sampleSize;
-		System.out.println("|----|------|-----|-----|---------|---------|------------|----|-------|-----|");
-    	System.out.format( "|AVGs|      |     |     |%9.4f|%9.1f| %10.1f | %2d | %5.2f | %3.1f |\n" , 
-    			avgTime, avgIters, avgCost, sumTargets, apd, avgChanges);
+		System.out.println("|----|--------|-----|-----|---------|---------|------------|----|-------|-----|");
+    	System.out.format( "|AVGs|%2d-%2d-%2d|     |     |%9.4f|%9.1f| %10.1f | %2d | %5.2f | %3.1f |\n" , 
+    			sumRots, sumAS, sumEO ,avgTime, avgIters, avgCost, sumTargets, apd, avgChanges);
     	
     	if (createFile) {
 			try {
-				csvWriter.append(instName+", , , ,"+avgTime+","+avgIters+","+avgCost+","
+				csvWriter.append(instName+","+ sumRots+"-"+sumAS+"-"+sumEO+" , , ,"+avgTime+","+avgIters+","+avgCost+","
 								+sumTargets+","+apd+","+avgChanges+",");
 				
 			} catch (IOException e) {

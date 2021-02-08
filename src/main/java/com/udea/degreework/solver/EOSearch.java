@@ -78,6 +78,8 @@ public class EOSearch extends Metaheuristic{
     private double expUp;
     private double powDown;
     private double powUp;
+    private double gammaDown;
+    private double gammaUp;
 
     public EOSearch (int size){
         super(size);
@@ -92,12 +94,15 @@ public class EOSearch extends Metaheuristic{
         expUp = 8.867754442 * Math.pow(problemModel.getSize(), -0.895936426);
         powDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
         powUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
+        gammaDown = 1.575467001 * Math.pow(problemModel.getSize(), -0.1448643794);
+        gammaUp = 2.426369897 * Math.pow(problemModel.getSize(), -0.1435045369);
         
         Object valOrNull = configuration.get("EO.tau");
-        tauUserSel = valOrNull == null ? (1.0 + 1.0 / Math.log(problemModel.getSize())) : (double) valOrNull;
+        tauUserSel = valOrNull == null ? (1.0 + 1.0 / Math.log(problemModel.getSize())) : Double.parseDouble((String) valOrNull);
         valOrNull = configuration.get("EO.pdf");
-        pdfUserSel = valOrNull == null ? -1 : (int) valOrNull;
+        pdfUserSel = valOrNull == null ? -1 : Integer.parseInt((String) valOrNull);
         selSecond = 1; //opts("-EO_ss", 1);
+        LOGGER.log(Level.INFO, "tausel: "+tauUserSel+" pdf sel: "+pdfUserSel);
     }
 
     /**
@@ -124,6 +129,8 @@ public class EOSearch extends Metaheuristic{
                 tau = powDown + (powUp - powDown) * ThreadLocalRandom.current().nextDouble();
             }else if (pdfS == Func.EXPONENTIAL) {
                 tau = expDown + (expUp - expDown) * ThreadLocalRandom.current().nextDouble();
+            }if (pdfS == Func.GAMMA) {
+                tau = gammaDown + (gammaUp - gammaDown) * ThreadLocalRandom.current().nextDouble();
             }
         }else {
             tau = tauUserSel;

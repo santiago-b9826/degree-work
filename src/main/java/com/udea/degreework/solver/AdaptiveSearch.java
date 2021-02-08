@@ -49,9 +49,9 @@ public class AdaptiveSearch extends Metaheuristic{
         nVarToReset = -1; //opts("--AS_varToReset",-1);
         
         Object valOrNull = configuration.get("AS.resetPercent");
-        this.resetPercent = valOrNull == null ? 10 : (int) valOrNull;
+        this.resetPercent = valOrNull == null ? 10 : Integer.parseInt((String) valOrNull);
         valOrNull = configuration.get("AS.freezeLocMin");
-        this.freezeLocMin = valOrNull == null ? 5 : (int) valOrNull; 
+        this.freezeLocMin = valOrNull == null ? 5 : Integer.parseInt((String) valOrNull); 
         freezeSwap = 5; //opts("--AS_freezeSwap",5n);
         resetLimit = 5; //opts("--AS_resetLimit",5n);
         probSelectLocMin = 60; //opts("--AS_probSelecLocMin", 0n);
