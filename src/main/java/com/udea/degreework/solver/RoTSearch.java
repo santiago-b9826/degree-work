@@ -1,5 +1,6 @@
 package com.udea.degreework.solver;
 
+import com.udea.degreework.ParamInformation;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.Arrays;
@@ -26,8 +27,11 @@ public class RoTSearch extends Metaheuristic{
     private int[][] tabuList;
 
     //tdl = 0.9;
+    //private double tdl = 0.2;
+    //private double tdu = 1.8;
+    
     private double tdl = 0.2;
-    private double tdu = 1.8;
+    private double tdu = 8;
 
     private double al = 2.0;
     private double au = 5.0;
@@ -142,7 +146,7 @@ public class RoTSearch extends Metaheuristic{
 
 
         if(move.getFirst() == Integer.MAX_VALUE){
-            //System.out.println("All moves are tabu!");
+            LOGGER.log(Level.INFO,"All moves are tabu!");
             return currentCost;
         }else{
             //System.out.println("swap pos "+move.getFirst()+" "+move.getSecond());
@@ -154,10 +158,10 @@ public class RoTSearch extends Metaheuristic{
 
             //tabuList( move.getFirst(), cop_.variables(move.getSecond())) = this.nIter + (cube() * this.tabuDuration) as Int;
             int t1, t2;
-            // t1 = (cube() * this.tabuDuration) as Int; 
-            // t2 = (cube() * this.tabuDuration) as Int;
-            do t1 = (int) (cube() * tabuDuration); while(t1 <= 2);
-            do t2 = (int) (cube() * tabuDuration); while(t2 <= 2);
+            t1 = (int)(cube() * tabuDuration); 
+            t2 = (int)(cube() * tabuDuration);
+            //do t1 = (int) (cube() * tabuDuration); while(t1 <= 2);
+            //do t2 = (int) (cube() * tabuDuration); while(t2 <= 2);
 
 
             tabuList[move.getFirst()][variables[move.getSecond()]] = nIter + t1;
@@ -237,4 +241,29 @@ public class RoTSearch extends Metaheuristic{
     //solverState = this.createSolverState();
     //this.solver.communicateLM( new State(sz, this.currentCost, cop.getVariables() as Valuation(sz), here.id as Int, solverState) );
     //}
+    
+    public void adaptParameters(ParamInformation paramInfo) {
+    	//TODO: Adapt Parameters according to  info received
+    	LOGGER.log(Level.INFO, "param in ROTS, gain:"+paramInfo.gain()+" distance: "+paramInfo.distance());
+    	if(paramInfo.gain() <= 0.1) {
+    		// If no improvement change parameters
+    		if(paramInfo.distance() > 0.2) {
+    			// Intensify
+    			if(tabuDuration > variables.length/4) { //to avoid negative values
+    				tabuDuration = tabuDuration - variables.length/4;
+    			}
+    			aspiration =  (int)(aspiration + variables.length/2);
+    			LOGGER.log(Level.INFO, "AUTO-PARAM: no improvement change params to intensify "+tabuDuration+" "+aspiration);
+    		} else {
+    			// Diversify
+    			tabuDuration = tabuDuration + variables.length/4;
+    			if(aspiration > variables.length/2) {
+    				aspiration =  (int)(aspiration - variables.length/2);
+    			}
+    			LOGGER.log(Level.INFO, "AUTO-PARAM: no improvement change params to diversify"+tabuDuration+" "+aspiration);
+    			
+    		}
+    	}
+    	
+    }
 }

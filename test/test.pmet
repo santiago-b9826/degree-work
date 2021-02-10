@@ -2,39 +2,32 @@ Config {
     size: 40
     model: QAP
     target: 3139370
-    maxTime: 5000
-    errorRange: 3
-    updatePoolI: 40000
-    requestPoolI: 80000
+    maxTime: 60000
+    updatePoolI: 25000
+    requestPoolI: 50000
+    autoParam: 1000 
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
 	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
-	sampleSize: 10
-	outFile: tai20a.csv
-	EO.pdf: -1
-	EO.tau: -1.0
+	sampleSize: 5
+	errorRange: 1
 	RoTS.tabuDurationFactor: -1.0
 	RoTS.aspirationFactor: -1.0
-	
+	EO.tau: -1.0
 }
 
 Execution {
 	Team <2>{
-		Worker <1> {
-			MH: Adaptive
-			updatePool: 1
-			requestPool: 2
-		}
 		Worker <2> {
 			MH: Extremal
-			updatePool: 2
+			updatePool: 1
 			requestPool: 1
 		}
-		Worker <1> {
+		Worker <2> {
 			MH: RoT
 			updatePool: 1
-			requestPool: 2
+			requestPool: 1
 		}
 		Pool { 
 			ID: 1

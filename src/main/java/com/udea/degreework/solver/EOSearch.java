@@ -1,5 +1,6 @@
 package com.udea.degreework.solver;
 
+import com.udea.degreework.ParamInformation;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.Arrays;
@@ -337,5 +338,9 @@ public class EOSearch extends Metaheuristic{
         public E random() {
             return values[ThreadLocalRandom.current().nextInt(values.length)];
         }
+    }
+    
+    public void adaptParameters(ParamInformation paramInfo) {
+    	//TODO: Adapt Parameters according to  info received
     }
 }

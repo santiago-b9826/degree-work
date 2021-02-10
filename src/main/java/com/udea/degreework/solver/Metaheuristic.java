@@ -1,5 +1,6 @@
 package com.udea.degreework.solver;
 
+import com.udea.degreework.ParamInformation;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.HashMap;
@@ -242,6 +243,10 @@ public class Metaheuristic {
         public void setSecond(int s){
             this.second = s;
         }
+    }
+    
+    public void adaptParameters(ParamInformation paramInfo) {
+    	LOGGER.log(Level.WARNING, "must be overwritten by each descendant");
     }
 
 }

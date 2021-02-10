@@ -1,10 +1,12 @@
 package com.udea.degreework.solver;
 
+import com.udea.degreework.ParamInformation;
 import com.udea.degreework.model.QAPModel;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class AdaptiveSearch extends Metaheuristic{
     private int[] mark;
@@ -337,5 +339,9 @@ public class AdaptiveSearch extends Metaheuristic{
         //solver.communicateLM( this.currentCost, cop.getVariables() as Valuation(sz));
         //solverState = createSolverState();
         //solver.communicateLM( new State(sz,this.currentCost, cop.getVariables() as Valuation(sz), here.id as Int, solverState) );
+    }
+    
+    public void adaptParameters(ParamInformation paramInfo) {
+    	//TODO: Adapt Parameters according to  info received
     }
 }
