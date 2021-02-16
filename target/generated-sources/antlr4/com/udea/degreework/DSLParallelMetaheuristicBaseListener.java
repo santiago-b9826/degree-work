@@ -1,4 +1,4 @@
-// Generated from com/udea/degreework/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
+// Generated from DSLParallelMetaheuristic.g4 by ANTLR 4.4
 package com.udea.degreework;
 
 	import java.util.Map;
@@ -15,6 +15,7 @@ package com.udea.degreework;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -29,84 +30,84 @@ public class DSLParallelMetaheuristicBaseListener implements DSLParallelMetaheur
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStart(DSLParallelMetaheuristicParser.StartContext ctx) { }
+	@Override public void enterStart(@NotNull DSLParallelMetaheuristicParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitStart(DSLParallelMetaheuristicParser.StartContext ctx) { }
+	@Override public void exitStart(@NotNull DSLParallelMetaheuristicParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTeam(DSLParallelMetaheuristicParser.TeamContext ctx) { }
+	@Override public void enterPool(@NotNull DSLParallelMetaheuristicParser.PoolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTeam(DSLParallelMetaheuristicParser.TeamContext ctx) { }
+	@Override public void exitPool(@NotNull DSLParallelMetaheuristicParser.PoolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWorker(DSLParallelMetaheuristicParser.WorkerContext ctx) { }
+	@Override public void enterTeam(@NotNull DSLParallelMetaheuristicParser.TeamContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWorker(DSLParallelMetaheuristicParser.WorkerContext ctx) { }
+	@Override public void exitTeam(@NotNull DSLParallelMetaheuristicParser.TeamContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPool(DSLParallelMetaheuristicParser.PoolContext ctx) { }
+	@Override public void enterWorker(@NotNull DSLParallelMetaheuristicParser.WorkerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPool(DSLParallelMetaheuristicParser.PoolContext ctx) { }
+	@Override public void exitWorker(@NotNull DSLParallelMetaheuristicParser.WorkerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssign(DSLParallelMetaheuristicParser.AssignContext ctx) { }
+	@Override public void enterAssign(@NotNull DSLParallelMetaheuristicParser.AssignContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAssign(DSLParallelMetaheuristicParser.AssignContext ctx) { }
+	@Override public void exitAssign(@NotNull DSLParallelMetaheuristicParser.AssignContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEveryRule(ParserRuleContext ctx) { }
+	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEveryRule(ParserRuleContext ctx) { }
+	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitTerminal(TerminalNode node) { }
+	@Override public void visitTerminal(@NotNull TerminalNode node) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitErrorNode(ErrorNode node) { }
+	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
 }

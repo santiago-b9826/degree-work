@@ -1,4 +1,4 @@
-// Generated from com/udea/degreework/DSLParallelMetaheuristic.g4 by ANTLR 4.5.1
+// Generated from DSLParallelMetaheuristic.g4 by ANTLR 4.4
 package com.udea.degreework;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class DSLParallelMetaheuristicLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.5.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -24,53 +24,16 @@ public class DSLParallelMetaheuristicLexer extends Lexer {
 		"DEFAULT_MODE"
 	};
 
+	public static final String[] tokenNames = {
+		"'\\u0000'", "'\\u0001'", "'\\u0002'", "'\\u0003'", "'\\u0004'", "'\\u0005'", 
+		"'\\u0006'", "'\\u0007'", "'\b'", "'\t'", "'\n'", "'\\u000B'", "'\f'", 
+		"'\r'", "'\\u000E'", "'\\u000F'"
+	};
 	public static final String[] ruleNames = {
 		"CONFIG", "EXECUTION", "TEAM", "WORKER", "POOL", "OPEN_CURLY_BRACKET", 
 		"CLOSE_CURLY_BRACKET", "GREATER_THAN", "LESS_THAN", "NUMBER_SIGN", "COLON", 
 		"COMMA", "NUMBER", "STRING", "WS"
 	};
-
-	private static final String[] _LITERAL_NAMES = {
-		null, "'Config'", "'Execution'", "'Team'", "'Worker'", "'Pool'", "'{'", 
-		"'}'", "'>'", "'<'", "'#'", "':'", "','"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, "CONFIG", "EXECUTION", "TEAM", "WORKER", "POOL", "OPEN_CURLY_BRACKET", 
-		"CLOSE_CURLY_BRACKET", "GREATER_THAN", "LESS_THAN", "NUMBER_SIGN", "COLON", 
-		"COMMA", "NUMBER", "STRING", "WS"
-	};
-	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-
-	/**
-	 * @deprecated Use {@link #VOCABULARY} instead.
-	 */
-	@Deprecated
-	public static final String[] tokenNames;
-	static {
-		tokenNames = new String[_SYMBOLIC_NAMES.length];
-		for (int i = 0; i < tokenNames.length; i++) {
-			tokenNames[i] = VOCABULARY.getLiteralName(i);
-			if (tokenNames[i] == null) {
-				tokenNames[i] = VOCABULARY.getSymbolicName(i);
-			}
-
-			if (tokenNames[i] == null) {
-				tokenNames[i] = "<INVALID>";
-			}
-		}
-	}
-
-	@Override
-	@Deprecated
-	public String[] getTokenNames() {
-		return tokenNames;
-	}
-
-	@Override
-
-	public Vocabulary getVocabulary() {
-		return VOCABULARY;
-	}
 
 
 	public DSLParallelMetaheuristicLexer(CharStream input) {
@@ -80,6 +43,9 @@ public class DSLParallelMetaheuristicLexer extends Lexer {
 
 	@Override
 	public String getGrammarFileName() { return "DSLParallelMetaheuristic.g4"; }
+
+	@Override
+	public String[] getTokenNames() { return tokenNames; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

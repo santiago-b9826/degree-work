@@ -9,7 +9,7 @@ Config {
     numberOfTeams: 2
     numberOfWorkersPerTeam: 4
     equalNumberOfWorkersPerTeam: true
-	filePath: /Users/dannymunera/Documents/repos/degree-work/tai40a.qap
+	filePath: /home/santiago/eclipse-workspace/degree-work/tai40a.qap
 	sampleSize: 10
 	outFile: tai20a.csv
 	EO.pdf: -1
